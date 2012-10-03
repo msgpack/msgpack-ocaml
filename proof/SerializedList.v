@@ -247,9 +247,8 @@ Proof.
 unfold Soundness.
 intros.
 apply (SLArray16 os 0 _ _ bs' "000" "000"); auto.
-rewrite <- ascii16_of_nat_O.
-reflexivity.
 Qed.
+
 
 Lemma soundness_array32_nil:
   Soundness (Array32 []) ["221"; "000"; "000";"000"; "000"].
@@ -257,8 +256,6 @@ Proof.
 unfold Soundness.
 intros.
 apply (SLArray32 os 0 _ _ bs' "000" "000" "000" "000"); auto.
-rewrite <- ascii32_of_nat_O.
-reflexivity.
 Qed.
 
 Lemma soundness_fixmap_nil:
@@ -275,8 +272,6 @@ Proof.
 unfold Soundness.
 intros.
 apply (SLMap16 os 0 [] _ bs' "000" "000"); auto.
-rewrite <- ascii16_of_nat_O.
-reflexivity.
 Qed.
 
 Lemma soundness_map32_nil:
@@ -285,8 +280,6 @@ Proof.
 unfold Soundness.
 intros.
 apply (SLMap32 os 0 [] _ bs' "000" "000" "000" "000"); auto.
-rewrite <- ascii32_of_nat_O.
-reflexivity.
 Qed.
 
 Lemma soundness_fixarray_cons: forall x xs y ys b1 b2 b3 b4 b5 b6 b7 b8,
@@ -518,4 +511,3 @@ apply Serialized_ind; intros; auto with soundness.
  apply soundness_map16_cons with (t1:=t1) (t2:=t2); auto.
  apply soundness_map32_cons with (t1:=t1) (t2:=t2) (t3:=t3) (t4:=t4); auto.
 Qed.
-

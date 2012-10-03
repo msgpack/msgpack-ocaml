@@ -81,10 +81,10 @@ Fixpoint serialize (obj : object) : list ascii8 :=
       let ys :=
         flat_map (fun p => serialize (fst p) ++ serialize (snd p)) xs
       in
-      match ascii32_of_nat @@ length xs with
-        | ((s1,s2),(s3,s4)) =>
-         "223"::s1::s2::s3::s4::ys
-      end
+      let s :=
+        ascii32_of_nat @@ length xs
+      in
+        "223"::(fst (fst s))::(snd (fst s))::(fst (snd s))::(snd (snd s))::ys
   end.
 
 Definition Correct obj xs :=
@@ -240,7 +240,7 @@ Proof.
 unfold Correct.
 intros.
 simpl.
-rewrite <- ascii16_of_nat_O.
+rewrite <- ascii8_of_nat_O.
 reflexivity.
 Qed.
 
@@ -251,7 +251,7 @@ unfold Correct.
 intros.
 simpl.
 unfold atat.
-rewrite <- ascii32_of_nat_O.
+rewrite <- ascii8_of_nat_O.
 reflexivity.
 Qed.
 
@@ -267,7 +267,7 @@ Proof.
 unfold Correct.
 intros.
 simpl.
-rewrite <- ascii16_of_nat_O.
+rewrite <- ascii8_of_nat_O.
 reflexivity.
 Qed.
 
@@ -278,7 +278,7 @@ unfold Correct.
 intros.
 simpl.
 unfold atat.
-rewrite <- ascii32_of_nat_O.
+rewrite <- ascii8_of_nat_O.
 reflexivity.
 Qed.
 
@@ -335,17 +335,17 @@ Lemma correct_array32_cons: forall x xs y ys s1 s2 s3 s4 t1 t2 t3 t4,
   (Serialized (Array32 xs) ("221"::t1::t2::t3::t4::ys) -> Correct (Array32 xs) ("221"::t1::t2::t3::t4::ys)) ->
   Correct (Array32 (x::xs)) ("221"::s1::s2::s3::s4::y ++ ys).
 Proof.
-unfold Correct.
-intros.
-simpl in *.
-unfold atat in *.
-rewrite_for (ascii32_of_nat (S (length xs))).
-apply H2 in H1; auto.
-apply H4 in H3; auto.
-rewrite_for (ascii32_of_nat (length xs)).
-rewrite_for y.
-inversion H3.
-reflexivity.
+  unfold Correct.
+  intros.
+  simpl in *.
+  unfold atat in *.
+  rewrite_for (ascii32_of_nat (S (length xs))).
+  apply H2 in H1; auto.
+  apply H4 in H3; auto.
+  rewrite_for y.
+  rewrite <- H in H3.
+  inversion H3.
+  auto.
 Qed.
 
 Lemma correct_fixmap_cons: forall x1 x2 xs y1 y2 ys b1 b2 b3 b4 b5 b6 b7 b8,
@@ -410,6 +410,7 @@ Lemma correct_map32_cons : forall x1 x2 xs y1 y2 ys s1 s2 s3 s4 t1 t2 t3 t4,
   Correct (Map32 xs) ("223" :: t1 :: t2 :: t3 :: t4 :: ys) ->
   Correct (Map32 ((x1, x2) :: xs)) ("223" :: s1 :: s2 :: s3 :: s4 :: y1 ++ y2 ++ ys).
 Proof.
+intros.
 unfold Correct.
 intros.
 simpl in *.
@@ -418,11 +419,15 @@ rewrite_for (ascii32_of_nat (S (length xs))).
 apply H2 in H1.
 apply H4 in H3.
 apply H6 in H5.
-rewrite_for (ascii32_of_nat (length xs)).
+simpl.
 rewrite_for y1.
 rewrite_for y2.
-inversion H5.
 rewrite <- app_assoc.
+simpl in H5.
+unfold atat in H5.
+rewrite_for (ascii32_of_nat (length xs)).
+simpl in H5.
+inversion H5.
 reflexivity.
 Qed.
 
@@ -463,3 +468,4 @@ apply Serialized_ind; intros; auto with correct.
  apply correct_map16_cons with (t1:=t1) (t2:=t2); auto.
  apply correct_map32_cons with (t1:=t1) (t2:=t2) (t3:=t3) (t4:=t4); auto.
 Qed.
+
