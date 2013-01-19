@@ -38,12 +38,6 @@ FILES[] =
 	serialize
 	config
 
-msgpackCore.ml : ../proof/msgpackCore.ml
-	cp $^ $@
-
-msgpackCore.mli : ../proof/msgpackCore.mli
-	cp $^ $@
-
 # ------------------------------
 # test code
 # ------------------------------
