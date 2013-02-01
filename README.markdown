@@ -1,9 +1,22 @@
 MsgPack for OCaml
 ==============================
 
-BULID/USAGE
+BULID
 ------------
-See http://wiki.msgpack.org/display/MSGPACK/QuickStart+for+OCaml
+
+    $ make
+    $ sudo make install
+
+EXAMPLE
+------------
+
+TBD
+
+TEST
+------------
+
+    $ ocaml setup.ml -configure --enable-tests
+    $ make test
 
 PROOF
 -----------
@@ -14,5 +27,6 @@ This section for user intrested in formal verification.
 You need Coq 8.4 and omake.
 
     $ cd proof
-    $ omake
+    $ make
+    $ cp *.ml ../lib
 
