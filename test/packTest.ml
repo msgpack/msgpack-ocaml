@@ -147,7 +147,7 @@ let valid = [
 ]
 
 
-let _ = begin "pack.ml" >::: [
+let tests = [
   "変換のテスト" >:::
     valid +> HList.concat_map begin fun (name, ok, ng) ->
        let xs =
@@ -172,4 +172,4 @@ let _ = begin "pack.ml" >::: [
 	end
       end
     end;
-] end +> run_test_tt_main
+]

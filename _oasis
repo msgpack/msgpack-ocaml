@@ -1,0 +1,31 @@
+OASISFormat: 0.3
+Name:        msgpack
+Version:     0.1.0
+Synopsis:    as
+Authors:     mzp
+License:     MIT
+Plugins:     META (0.3), DevFiles (0.3)
+
+BuildTools: ocamlbuild, camlp4
+
+Library msgpack
+  Pack:    true
+  Path:    lib
+  Modules: Config, Serialize
+  InternalModules: HList, MsgpackCore, Pack
+  CompiledObject: best
+  ByteOpt: -w +a -warn-error +a -annot
+  NativeOpt: -w +a -warn-error +a -annot
+  BuildDepends: extlib
+
+Executable test_exec
+  Path:   test
+  Build$: flag(tests)
+  MainIs: runner.ml
+  BuildDepends: msgpack, oUnit
+  CompiledObject: best
+
+Test main
+  Run$: flag(tests)
+  Command: $test_exec
+  TestTools: test_exec
