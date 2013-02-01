@@ -1,6 +1,12 @@
-name="msgpack"
-version="0.1.0"
-description="a library for MessagePack."
-requires="extlib, num"
-archive(byte)="msgpack.cmo"
-archive(native)="msgpack.cmx"
+# OASIS_START
+# DO NOT EDIT (digest: 828c9ac4b42bf664af0e794970c87e7a)
+version = "0.1.0"
+description = "as"
+requires = "extlib num"
+archive(byte) = "msgpack.cma"
+archive(byte, plugin) = "msgpack.cma"
+archive(native) = "msgpack.cmxa"
+archive(native, plugin) = "msgpack.cmxs"
+exists_if = "msgpack.cma"
+# OASIS_STOP
+

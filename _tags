@@ -1,0 +1,38 @@
+# OASIS_START
+# DO NOT EDIT (digest: 5360219867268e94a3982281ecb2510f)
+# Ignore VCS directories, you can use the same kind of rule outside 
+# OASIS_START/STOP if you want to exclude directories that contains 
+# useless stuff for the build process
+<**/.svn>: -traverse
+<**/.svn>: not_hygienic
+".bzr": -traverse
+".bzr": not_hygienic
+".hg": -traverse
+".hg": not_hygienic
+".git": -traverse
+".git": not_hygienic
+"_darcs": -traverse
+"_darcs": not_hygienic
+# Library msgpack
+"lib/msgpack.cmxs": use_msgpack
+"lib/config.cmx": for-pack(Msgpack)
+"lib/serialize.cmx": for-pack(Msgpack)
+"lib/hList.cmx": for-pack(Msgpack)
+"lib/msgpackCore.cmx": for-pack(Msgpack)
+"lib/pack.cmx": for-pack(Msgpack)
+<lib/msgpack.{cma,cmxa}>: oasis_library_msgpack_byte
+<lib/*.ml{,i}>: oasis_library_msgpack_byte
+<lib/msgpack.{cma,cmxa}>: oasis_library_msgpack_native
+<lib/*.ml{,i}>: oasis_library_msgpack_native
+<lib/*.ml{,i}>: pkg_extlib
+<lib/*.ml{,i}>: pkg_num
+# Executable test_exec
+<test/runner.{native,byte}>: use_msgpack
+<test/runner.{native,byte}>: pkg_oUnit
+<test/runner.{native,byte}>: pkg_extlib
+<test/runner.{native,byte}>: pkg_num
+<test/*.ml{,i}>: use_msgpack
+<test/*.ml{,i}>: pkg_oUnit
+<test/*.ml{,i}>: pkg_extlib
+<test/*.ml{,i}>: pkg_num
+# OASIS_STOP

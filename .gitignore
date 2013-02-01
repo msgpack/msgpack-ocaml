@@ -9,3 +9,7 @@
 *.annot
 *.opt
 *.run
+_build
+*.native
+setup.log
+setup.data
