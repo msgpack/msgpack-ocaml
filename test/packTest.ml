@@ -1,8 +1,14 @@
-open Base
 open OUnit
+open Printf
+open Msgpack
 open MsgpackCore
 open Pack
-open Printf
+
+let (+>) f g = g f
+let ($) f g x = f (g x)
+
+let concat_map f xs =
+  List.fold_right ((@) $ f) xs []
 
 let c0 =
   Ascii (false,false,false,false,false,false,false,false)
@@ -98,9 +104,9 @@ let valid = [
     Double (((c0,c0),(c0,c0)),((c0,c0),(c0,c0))), `Double 0.0;
     (* 0.5 = 3f_e0_00_00_00_00_00_00 *)
     Double (((Ascii (true,true,true,true,true,true,false,false),
-	     Ascii (false,false,false,false,false,true,true,true)),
-	     (c0,c0)),
-	    ((c0,c0),(c0,c0))), `Double 0.5
+              Ascii (false,false,false,false,false,true,true,true)),
+             (c0,c0)),
+            ((c0,c0),(c0,c0))), `Double 0.5
   ],[];
   "fixraw", [
     FixRaw [], `FixRaw [];
@@ -149,27 +155,27 @@ let valid = [
 
 let tests = [
   "変換のテスト" >:::
-    valid +> HList.concat_map begin fun (name, ok, ng) ->
-       let xs =
-	 ok +> List.map begin fun (expect, actual) ->
-	   (sprintf "%sが変換できる" name) >:: (fun _ -> assert_equal expect (pack actual));
-	 end in
-       let ys =
-	 ng +> List.map begin fun actual ->
-	   (sprintf "%sのエラーチェック" name) >:: (fun _ -> assert_raises (Not_conversion name) (fun () -> pack actual))
-	 end in
-	 xs @ ys
+    valid +> concat_map begin fun (name, ok, ng) ->
+      let xs =
+        ok +> List.map begin fun (expect, actual) ->
+          (sprintf "%sが変換できる" name) >:: (fun _ -> assert_equal expect (pack actual));
+        end in
+      let ys =
+        ng +> List.map begin fun actual ->
+          (sprintf "%sのエラーチェック" name) >:: (fun _ -> assert_raises (Not_conversion name) (fun () -> pack actual))
+        end in
+      xs @ ys
     end;
   "復元のテスト" >:::
-    valid +> HList.concat_map begin fun (name, ok, _) ->
+    valid +> concat_map begin fun (name, ok, _) ->
       ok +> List.map begin fun (actual, expect) ->
-	(sprintf "%sが復元できる" name) >:: begin fun _ ->
-	  match expect, unpack actual with
-	      `Uint64 n1, `Uint64 n2 ->
-		assert_equal ~cmp:Big_int.eq_big_int n1 n2
-	    | x, y ->
-		assert_equal x y
-	end
+        (sprintf "%sが復元できる" name) >:: begin fun _ ->
+          match expect, unpack actual with
+              `Uint64 n1, `Uint64 n2 ->
+                assert_equal ~cmp:Big_int.eq_big_int n1 n2
+            | x, y ->
+              assert_equal x y
+        end
       end
     end;
 ]

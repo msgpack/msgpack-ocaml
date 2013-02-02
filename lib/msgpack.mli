@@ -1,11 +1,5 @@
 (** MessagePack for OCaml *)
 
-(** Conversion MessagePack object between OCaml and Coq. *)
-module Pack : sig
-  (** exception when MesagePack object is invalid form *)
-  exception Not_conversion of string
-end
-
 (** MessagePack Serializer *)
 module Serialize : sig
   (** MesagePack object. See also {{:http://redmine.msgpack.org/projects/msgpack/wiki/FormatSpec}MessagePack specification}. *)
@@ -43,4 +37,47 @@ end
 
 module Config : sig
   val version : int * int * int
+end
+
+module MsgpackCore : sig
+  type ascii =
+    | Ascii of bool * bool * bool * bool * bool * bool * bool * bool
+
+  type ascii8 = ascii
+  type ascii16 = ascii8 * ascii8
+  type ascii32 = ascii16 * ascii16
+  type ascii64 = ascii32 * ascii32
+
+  type object0 =
+    | Bool of bool
+    | Nil
+    | PFixnum of ascii8
+    | NFixnum of ascii8
+    | Uint8 of ascii8
+    | Uint16 of ascii16
+    | Uint32 of ascii32
+    | Uint64 of ascii64
+    | Int8 of ascii8
+    | Int16 of ascii16
+    | Int32 of ascii32
+    | Int64 of ascii64
+    | Float of ascii32
+    | Double of ascii64
+    | FixRaw of ascii8 list
+    | Raw16 of ascii8 list
+    | Raw32 of ascii8 list
+    | FixArray of object0 list
+    | Array16 of object0 list
+    | Array32 of object0 list
+    | FixMap of (object0 * object0) list
+    | Map16 of (object0 * object0) list
+    | Map32 of (object0 * object0) list
+end
+
+(** Conversion MessagePack object between OCaml and Coq. *)
+module Pack : sig
+  (** exception when MesagePack object is invalid form *)
+  exception Not_conversion of string
+  val pack : Serialize.t -> MsgpackCore.object0
+  val unpack : MsgpackCore.object0 -> Serialize.t
 end
