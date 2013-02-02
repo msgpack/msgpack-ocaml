@@ -1,8 +1,8 @@
 # OASIS_START
-# DO NOT EDIT (digest: 828c9ac4b42bf664af0e794970c87e7a)
+# DO NOT EDIT (digest: 1fd819ac0d803581cbb28d5f7e8634a2)
 version = "0.1.0"
 description = "as"
-requires = "extlib num"
+requires = "extlib num meta_conv"
 archive(byte) = "msgpack.cma"
 archive(byte, plugin) = "msgpack.cma"
 archive(native) = "msgpack.cmxa"
