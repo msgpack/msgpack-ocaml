@@ -1,7 +1,7 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 204d9b389025bdcb6bde5b27af8fe45a) *)
+(* DO NOT EDIT (digest: 38d7d926071e65ec3224081254cb7fed) *)
 module OASISGettext = struct
-(* # 21 "/Users/mzp/.opam/system/build/oasis.0.3.0/src/oasis/OASISGettext.ml" *)
+(* # 21 "/home/mzp/.opam/system/build/oasis.0.3.0/src/oasis/OASISGettext.ml" *)
 
   let ns_ str =
     str
@@ -24,7 +24,7 @@ module OASISGettext = struct
 end
 
 module OASISExpr = struct
-(* # 21 "/Users/mzp/.opam/system/build/oasis.0.3.0/src/oasis/OASISExpr.ml" *)
+(* # 21 "/home/mzp/.opam/system/build/oasis.0.3.0/src/oasis/OASISExpr.ml" *)
 
 
 
@@ -116,7 +116,7 @@ end
 
 # 117 "myocamlbuild.ml"
 module BaseEnvLight = struct
-(* # 21 "/Users/mzp/.opam/system/build/oasis.0.3.0/src/base/BaseEnvLight.ml" *)
+(* # 21 "/home/mzp/.opam/system/build/oasis.0.3.0/src/base/BaseEnvLight.ml" *)
 
   module MapString = Map.Make(String)
 
@@ -214,7 +214,7 @@ end
 
 # 215 "myocamlbuild.ml"
 module MyOCamlbuildFindlib = struct
-(* # 21 "/Users/mzp/.opam/system/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildFindlib.ml" *)
+(* # 21 "/home/mzp/.opam/system/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildFindlib.ml" *)
 
   (** OCamlbuild extension, copied from 
     * http://brion.inria.fr/gallium/index.php/Using_ocamlfind_with_ocamlbuild
@@ -323,7 +323,7 @@ module MyOCamlbuildFindlib = struct
 end
 
 module MyOCamlbuildBase = struct
-(* # 21 "/Users/mzp/.opam/system/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml" *)
+(* # 21 "/home/mzp/.opam/system/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml" *)
 
   (** Base functions for writing myocamlbuild.ml
       @author Sylvain Le Gall
@@ -339,7 +339,7 @@ module MyOCamlbuildBase = struct
   type name = string 
   type tag = string 
 
-(* # 56 "/Users/mzp/.opam/system/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml" *)
+(* # 56 "/home/mzp/.opam/system/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml" *)
 
   type t =
       {
@@ -477,29 +477,53 @@ end
 open Ocamlbuild_plugin;;
 let package_default =
   {
-     MyOCamlbuildBase.lib_ocaml = [("msgpack", ["lib"])];
+     MyOCamlbuildBase.lib_ocaml =
+       [("msgpack", ["lib/core"]); ("msgpack_conv", ["lib/conv"])];
      lib_c = [];
      flags =
        [
           (["oasis_library_msgpack_byte"; "ocaml"; "link"; "byte"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+            [(OASISExpr.EBool true, S [A "-w"; A "+a-27-39-4"; A "-annot"])]);
           (["oasis_library_msgpack_native"; "ocaml"; "link"; "native"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+            [(OASISExpr.EBool true, S [A "-w"; A "+a-27-39-4"; A "-annot"])]);
           (["oasis_library_msgpack_byte"; "ocaml"; "ocamldep"; "byte"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+            [(OASISExpr.EBool true, S [A "-w"; A "+a-27-39-4"; A "-annot"])]);
           (["oasis_library_msgpack_native"; "ocaml"; "ocamldep"; "native"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+            [(OASISExpr.EBool true, S [A "-w"; A "+a-27-39-4"; A "-annot"])]);
           (["oasis_library_msgpack_byte"; "ocaml"; "compile"; "byte"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+            [(OASISExpr.EBool true, S [A "-w"; A "+a-27-39-4"; A "-annot"])]);
           (["oasis_library_msgpack_native"; "ocaml"; "compile"; "native"],
+            [(OASISExpr.EBool true, S [A "-w"; A "+a-27-39-4"; A "-annot"])]);
+          (["oasis_library_msgpack_conv_byte"; "ocaml"; "link"; "byte"],
+            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+          (["oasis_library_msgpack_conv_native"; "ocaml"; "link"; "native"],
+            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+          (["oasis_library_msgpack_conv_byte"; "ocaml"; "ocamldep"; "byte"],
+            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+          ([
+              "oasis_library_msgpack_conv_native";
+              "ocaml";
+              "ocamldep";
+              "native"
+           ],
+            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+          (["oasis_library_msgpack_conv_byte"; "ocaml"; "compile"; "byte"],
+            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+          (["oasis_library_msgpack_conv_native"; "ocaml"; "compile"; "native"
+           ],
             [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])])
        ];
-     includes = [("test", ["lib"])];
+     includes =
+       [
+          ("test/core", ["lib/core"]);
+          ("test/conv", ["lib/conv"; "lib/core"]);
+          ("lib/conv", ["lib/core"])
+       ];
      }
   ;;
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default package_default;;
 
-# 504 "myocamlbuild.ml"
+# 528 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;

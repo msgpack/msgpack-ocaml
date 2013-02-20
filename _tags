@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: cc47489cc3029066070a852d82a4f9b7)
+# DO NOT EDIT (digest: d200d16ebb68919cc0ad3887a97a07c3)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -14,32 +14,46 @@
 "_darcs": -traverse
 "_darcs": not_hygienic
 # Library msgpack
-"lib/msgpack.cmxs": use_msgpack
-"lib/serialize.cmx": for-pack(Msgpack)
-"lib/open.cmx": for-pack(Msgpack)
-"lib/config.cmx": for-pack(Msgpack)
-"lib/hList.cmx": for-pack(Msgpack)
-"lib/msgpackCore.cmx": for-pack(Msgpack)
-"lib/pack.cmx": for-pack(Msgpack)
-<lib/msgpack.{cma,cmxa}>: oasis_library_msgpack_byte
-<lib/*.ml{,i}>: oasis_library_msgpack_byte
-<lib/msgpack.{cma,cmxa}>: oasis_library_msgpack_native
-<lib/*.ml{,i}>: oasis_library_msgpack_native
-<lib/*.ml{,i}>: pkg_extlib
-<lib/*.ml{,i}>: pkg_num
-<lib/*.ml{,i}>: pkg_meta_conv
-# Executable test_exec
-<test/runner.{native,byte}>: use_msgpack
-<test/runner.{native,byte}>: pkg_oUnit
-<test/runner.{native,byte}>: pkg_meta_conv.syntax
-<test/runner.{native,byte}>: pkg_extlib
-<test/runner.{native,byte}>: pkg_num
-<test/runner.{native,byte}>: pkg_meta_conv
-<test/*.ml{,i}>: use_msgpack
-<test/*.ml{,i}>: pkg_oUnit
-<test/*.ml{,i}>: pkg_meta_conv.syntax
-<test/*.ml{,i}>: pkg_extlib
-<test/*.ml{,i}>: pkg_num
-<test/*.ml{,i}>: pkg_meta_conv
+"lib/core/msgpack.cmxs": use_msgpack
+<lib/core/msgpack.{cma,cmxa}>: oasis_library_msgpack_byte
+<lib/core/*.ml{,i}>: oasis_library_msgpack_byte
+<lib/core/msgpack.{cma,cmxa}>: oasis_library_msgpack_native
+<lib/core/*.ml{,i}>: oasis_library_msgpack_native
+<lib/core/*.ml{,i}>: pkg_extlib
+<lib/core/*.ml{,i}>: pkg_num
+# Library msgpack_conv
+"lib/conv/msgpack_conv.cmxs": use_msgpack_conv
+<lib/conv/msgpack_conv.{cma,cmxa}>: oasis_library_msgpack_conv_byte
+<lib/conv/*.ml{,i}>: oasis_library_msgpack_conv_byte
+<lib/conv/msgpack_conv.{cma,cmxa}>: oasis_library_msgpack_conv_native
+<lib/conv/*.ml{,i}>: oasis_library_msgpack_conv_native
+<lib/conv/*.ml{,i}>: use_msgpack
+<lib/conv/*.ml{,i}>: pkg_meta_conv
+<lib/conv/*.ml{,i}>: pkg_extlib
+<lib/conv/*.ml{,i}>: pkg_num
+# Executable test_core
+<test/core/main.{native,byte}>: use_msgpack
+<test/core/main.{native,byte}>: pkg_oUnit
+<test/core/main.{native,byte}>: pkg_extlib
+<test/core/main.{native,byte}>: pkg_num
+<test/core/*.ml{,i}>: use_msgpack
+<test/core/*.ml{,i}>: pkg_oUnit
+<test/core/*.ml{,i}>: pkg_extlib
+<test/core/*.ml{,i}>: pkg_num
+# Executable test_conv
+<test/conv/main.{native,byte}>: use_msgpack_conv
+<test/conv/main.{native,byte}>: use_msgpack
+<test/conv/main.{native,byte}>: pkg_oUnit
+<test/conv/main.{native,byte}>: pkg_meta_conv.syntax
+<test/conv/main.{native,byte}>: pkg_meta_conv
+<test/conv/main.{native,byte}>: pkg_extlib
+<test/conv/main.{native,byte}>: pkg_num
+<test/conv/*.ml{,i}>: use_msgpack_conv
+<test/conv/*.ml{,i}>: use_msgpack
+<test/conv/*.ml{,i}>: pkg_oUnit
+<test/conv/*.ml{,i}>: pkg_meta_conv.syntax
+<test/conv/*.ml{,i}>: pkg_meta_conv
+<test/conv/*.ml{,i}>: pkg_extlib
+<test/conv/*.ml{,i}>: pkg_num
 # OASIS_STOP
-<test/*.ml{,i}>: syntax_camlp4o
+<test/conv/*.ml{,i}>: syntax_camlp4o

@@ -1,4 +1,5 @@
-open Msgpack.Open open Msgpack_conv
+open Msgpack
+open Msgpack_conv
 open OUnit
 
 type t1 = {

@@ -1,31 +1,99 @@
+# ------------------------------------------------------------
+# Package parameters
+# ------------------------------------------------------------ 
 OASISFormat: 0.3
 Name:        msgpack
-Version:     0.1.0
-Synopsis:    as
-Authors:     mzp
+Version:     1.0.0
+Authors:     MIZUNO Hiroki
 License:     MIT
 Plugins:     META (0.3), DevFiles (0.3)
+Homepage:    http://msgpack.org/
+Synopsis:    Msgpack library for Objective Caml
+Description: 
+  MessagePack is an efficient binary serialization format.
+  If meta_conv is installed, conv module will be installed.
 
 BuildTools: ocamlbuild, camlp4
 
+# ------------------------------------------------------------
+# Flags
+# ------------------------------------------------------------
+Flag all
+  Description: build and install everything
+  Default: false
+
+Flag core
+  Description: Build the core library
+  Default: true
+
+Flag conv
+  Description: Build the meta_conv library
+  Default$: flag(all)
+
+#------------------------------------------------------------
+# Libraries
+#------------------------------------------------------------
 Library msgpack
-  Pack:    true
-  Path:    lib
-  Modules: Serialize, Open, Config
-  InternalModules: HList, MsgpackCore, Pack
+  Build$: flag(core) || flag(all)
+  Install$: flag(core) || flag(all)
+  Path:    lib/core
+  Modules: Msgpack
+  InternalModules: HList, MsgpackCore, Pack,Serialize, Config, Base
+  CompiledObject: best
+  # supress warning for Coq-extracted code 
+  ByteOpt: -w +a-27-39-4 -annot
+  NativeOpt: -w +a-27-39-4 -annot
+  BuildDepends: extlib, num
+
+Library msgpack_conv
+  Build$: flag(conv) || flag(all)
+  Install$: flag(conv) || flag(all)
+  Path:    lib/conv
+  Modules: Msgpack_conv
+  InternalModules: Encode, Decode
   CompiledObject: best
   ByteOpt: -w +a -annot
   NativeOpt: -w +a -annot
-  BuildDepends: extlib, num, meta_conv
 
-Executable test_exec
-  Path:   test
-  Build$: flag(tests)
-  MainIs: runner.ml
-  BuildDepends: msgpack, oUnit, meta_conv.syntax
+  # install as msgpack.conv
+  FindlibName: conv
+  FindlibParent: msgpack
+  BuildDepends: meta_conv, msgpack
+
+# ------------------------------------------------------------
+# Test
+# ------------------------------------------------------------
+Executable test_core
+  Path:   test/core
+  Build$: flag(tests) && (flag(all) || flag(core))
+  Install: false
+  MainIs: main.ml
+  BuildDepends: msgpack, oUnit
   CompiledObject: best
 
-Test main
-  Run$: flag(tests)
-  Command: $test_exec
-  TestTools: test_exec
+Executable test_conv
+  Path:   test/conv
+  Build$: flag(tests) && (flag(all) || flag(conv))
+  Install: false
+  MainIs: main.ml
+  BuildDepends: msgpack, msgpack.conv, oUnit, meta_conv.syntax
+  CompiledObject: best
+
+Test core
+  Run$: flag(tests) && (flag(all) || flag(core))
+  Command: $test_core
+  TestTools: test_core
+
+Test conv
+  Run$: flag(tests) && (flag(all) || flag(conv))
+  Command: $test_conv
+  TestTools: test_conv
+
+# ------------------------------------------------------------
+# misc
+# ------------------------------------------------------------
+SourceRepository head
+  Type: git
+  Location: https://github.com/msgpack/msgpack-ocaml.git
+  Browser: https://github.com/msgpack/msgpack-ocaml
+

@@ -1,5 +1,5 @@
-let (@@) f g = f g
-let (+>) f g = g f
+external (@@) : ('a -> 'b) -> 'a -> 'b = "%apply"
+external (+>) : 'a -> ('a -> 'b) -> 'b =  "%revapply"
 let ($) f g x = f (g x)
 let (!$) = Lazy.force
 external id : 'a -> 'a = "%identity"
@@ -140,3 +140,7 @@ let p fmt = Printf.kprintf (fun s () -> print_endline s; flush stdout) fmt
 
 let ret x _ =
   x
+
+let errorf fmt =
+  Printf.ksprintf (fun s -> failwith (Printf.sprintf "Msgpack: %s" s)) fmt
+
