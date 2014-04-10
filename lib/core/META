@@ -1,8 +1,8 @@
 # OASIS_START
-# DO NOT EDIT (digest: add3b21cde9946436bd0914bec573fe5)
+# DO NOT EDIT (digest: bc1ea89d437b28f72d6e6c21b140c4cd)
 version = "1.0.0"
 description = "Msgpack library for Objective Caml"
-requires = "extlib num"
+requires = "num"
 archive(byte) = "msgpack.cma"
 archive(byte, plugin) = "msgpack.cma"
 archive(native) = "msgpack.cmxa"
