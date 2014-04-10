@@ -1,6 +1,6 @@
 # ------------------------------------------------------------
 # Package parameters
-# ------------------------------------------------------------ 
+# ------------------------------------------------------------
 OASISFormat: 0.3
 Name:        msgpack
 Version:     1.0.0
@@ -9,7 +9,7 @@ License:     MIT
 Plugins:     META (0.3), DevFiles (0.3)
 Homepage:    http://msgpack.org/
 Synopsis:    Msgpack library for Objective Caml
-Description: 
+Description:
   MessagePack is an efficient binary serialization format.
   If meta_conv is installed, conv module will be installed.
 
@@ -40,10 +40,10 @@ Library msgpack
   Modules: Msgpack
   InternalModules: HList, MsgpackCore, Pack,Serialize, Config, Base
   CompiledObject: best
-  # supress warning for Coq-extracted code 
+  # supress warning for Coq-extracted code
   ByteOpt: -w +a-27-39-4 -annot
   NativeOpt: -w +a-27-39-4 -annot
-  BuildDepends: extlib, num
+  BuildDepends: num
 
 Library msgpack_conv
   Build$: flag(conv) || flag(all)
@@ -96,4 +96,3 @@ SourceRepository head
   Type: git
   Location: https://github.com/msgpack/msgpack-ocaml.git
   Browser: https://github.com/msgpack/msgpack-ocaml
-
