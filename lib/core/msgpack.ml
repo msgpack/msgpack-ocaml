@@ -1,6 +1,6 @@
 
 module Serialize = Serialize
-module Config = Config
+module Config = MsgpackConfig
 module Pack = Pack
 module MsgpackCore = MsgpackCore
 

@@ -1,10 +1,10 @@
 # OASIS_START
-# DO NOT EDIT (digest: 6557c89b59db46cc6ab5012781ee0c68)
+# DO NOT EDIT (digest: d91a3bee6627ee0eb8487915e6033c34)
 Msgpack
 HList
 MsgpackCore
 Pack
 Serialize
-Config
+MsgpackConfig
 Base
 # OASIS_STOP
