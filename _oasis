@@ -38,7 +38,7 @@ Library msgpack
   Install$: flag(core) || flag(all)
   Path:    lib/core
   Modules: Msgpack
-  InternalModules: HList, MsgpackCore, Pack,Serialize, Config, Base
+  InternalModules: HList, MsgpackCore, Pack, Serialize, MsgpackConfig, Base
   CompiledObject: best
   # supress warning for Coq-extracted code
   ByteOpt: -w +a-27-39-4 -annot
