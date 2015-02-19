@@ -29,7 +29,7 @@ type t =
 
 (** MessagePack Serializer *)
 module Serialize : sig
-  type t = 
+  type t =
     [ `Bool of bool
     | `Nil
     | `PFixnum of int
@@ -63,7 +63,7 @@ module Serialize : sig
   val serialize_string   : t -> string
 end
 
-module Config : sig
+module MsgpackConfig : sig
   val version : int * int * int
 end
 
