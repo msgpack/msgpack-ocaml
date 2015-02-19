@@ -11,14 +11,14 @@ include Meta_conv.Coder.Make(struct
     let tuple =
       Encode.array
 
-    let variant tag = function
+    let variant tag _ = function
       | [] -> Encode.str tag
       | ts -> Encode.map [Encode.str tag, Encode.array ts]
 
     let poly_variant =
       variant
 
-    let record ts =
+    let record _ ts =
       Encode.map @@ List.map (fun (key, value) ->
         (Encode.str key, value)) ts
 
@@ -30,9 +30,9 @@ include Meta_conv.Coder.Make(struct
     let tuple =
       Decode.array
 
-    let variant = function
+    let variant _ = function
       | `FixRaw tag | `Raw16 tag | `Raw32 tag ->
-        ExtString.String.implode tag, []
+        implode tag, []
       | `FixMap [tag, ts] | `Map16 [tag, ts] | `Map32 [tag, ts] ->
         Decode.str tag, Decode.array ts
       | _ ->
@@ -41,7 +41,7 @@ include Meta_conv.Coder.Make(struct
     let poly_variant =
       variant
 
-    let record t =
+    let record _ t =
       Decode.map t
       +> List.map (fun (key, value) ->
         (Decode.str key, value))

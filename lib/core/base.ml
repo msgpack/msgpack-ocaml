@@ -1,4 +1,3 @@
-external (@@) : ('a -> 'b) -> 'a -> 'b = "%apply"
 external (+>) : 'a -> ('a -> 'b) -> 'b =  "%revapply"
 let ($) f g x = f (g x)
 let (!$) = Lazy.force
@@ -144,3 +143,12 @@ let ret x _ =
 let errorf fmt =
   Printf.ksprintf (fun s -> failwith (Printf.sprintf "Msgpack: %s" s)) fmt
 
+let explode str =
+  let res = ref [] in
+  String.iter (fun c -> res := c :: !res) str;
+  List.rev !res
+
+let implode chars =
+  let res = String.create (List.length chars) in
+  List.iteri (fun i c -> res.[i] <- c) chars;
+  res

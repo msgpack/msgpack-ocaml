@@ -48,7 +48,7 @@ let raw = function
     errorf "Raw expected"
 
 let str t =
-  ExtString.String.implode @@ raw t
+  implode @@ raw t
 
 let array = function
   | `FixArray xs | `Array16 xs | `Array32 xs ->

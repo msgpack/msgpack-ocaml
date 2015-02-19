@@ -41,7 +41,7 @@ let raw xs =
     `Raw32 xs
 
 let str s =
-  raw @@ ExtString.String.explode s
+  raw @@ explode s
 
 let array xs =
   let n =
