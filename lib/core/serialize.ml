@@ -1,11 +1,20 @@
 open Base
-open ExtString
 
 type t = Pack.t
 
+let explode str =
+  let res = ref [] in
+  String.iter (fun c -> res := c :: !res) str;
+  List.rev !res
+
+let implode chars =
+  let res = String.create (List.length chars) in
+  List.iteri (fun i c -> res.[i] <- c) chars;
+  res
+
 let deserialize_string str =
   str
-  +> String.explode
+  +> explode
   +> List.map Pack.ascii8_of_char
   +> MsgpackCore.deserialize 0
   +> List.hd
@@ -16,5 +25,4 @@ let serialize_string obj =
   +> Pack.pack
   +> MsgpackCore.serialize
   +> List.map Pack.char_of_ascii8
-  +> String.implode
-
+  +> implode
