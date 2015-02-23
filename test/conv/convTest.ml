@@ -71,6 +71,9 @@ let tests = [
   "varint" >:: begin fun () ->
     check
       msgpack_of_t6 t6_of_msgpack_exn
-        (`FixMap [`FixRaw ['F'; 'o'; 'o' ], `FixArray [`PFixnum 42]]) (Foo 42)
+        (`FixMap [`FixRaw ['F'; 'o'; 'o' ], `FixArray [`PFixnum 42]]) (Foo 42);
+    check
+      msgpack_of_t6 t6_of_msgpack_exn
+        (`FixRaw ['B'; 'a'; 'r' ]) Bar
   end
 ]
