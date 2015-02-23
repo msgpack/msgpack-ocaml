@@ -11,7 +11,7 @@ include Meta_conv.Coder.Make(struct
     let tuple =
       Encode.array
 
-    let variant tag _ = function
+    let variant _ tag = function
       | [] -> Encode.str tag
       | ts -> Encode.map [Encode.str tag, Encode.array ts]
 
