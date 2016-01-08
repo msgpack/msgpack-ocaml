@@ -19,16 +19,11 @@ let snd = function
 
 (** val length : 'a1 list -> int **)
 
-let rec length = function
-| [] -> 0
-| y::l' -> Pervasives.succ (length l')
+let rec length = List.length
 
 (** val app : 'a1 list -> 'a1 list -> 'a1 list **)
 
-let rec app l m =
-  match l with
-  | [] -> m
-  | a::l1 -> a::(app l1 m)
+let rec app = (fun l m -> List.rev (List.rev_append m (List.rev l)))
 
 type comparison =
 | Eq
@@ -2059,9 +2054,7 @@ module N =
 
 (** val flat_map : ('a1 -> 'a2 list) -> 'a1 list -> 'a2 list **)
 
-let rec flat_map f = function
-| [] -> []
-| x::t0 -> app (f x) (flat_map f t0)
+let rec flat_map = (fun f xs -> List.rev (List.fold_left (fun acc x -> List.rev_append (f x) acc) [] xs))
 
 (** val eucl_dev : int -> int -> (int * int) **)
 

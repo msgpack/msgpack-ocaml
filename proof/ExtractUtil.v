@@ -31,6 +31,11 @@ Extract Constant mlint_of_mlchar => "int_of_char".
 
 (* list *)
 Extract Inductive list => "list" ["[]" "(::)"].
+(* tail-recursive list functions *)
+Extract Constant List.length => "List.length".
+Extract Constant List.app => "(fun l m -> List.rev (List.rev_append m (List.rev l)))".
+Extract Constant List.flat_map =>
+  "(fun f xs -> List.rev (List.fold_left (fun acc x -> List.rev_append (f x) acc) [] xs))".
 
 (* option *)
 Extract Inductive option => "option" ["None" "Some"].

@@ -64,6 +64,6 @@ You need Coq 8.4 and omake.
 ``` bash
 $ cd proof
 $ make
-$ cp *.ml ../lib
+$ cp *.ml* ../lib/core
 ```
 
