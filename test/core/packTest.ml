@@ -178,4 +178,14 @@ let tests = [
         end
       end
     end;
+  "long_string" >:: begin fun _ ->
+    let rec make_list acc = function
+      | 0 -> acc
+      | n -> make_list ('A' :: acc) (n-1)
+    in
+    (* This will stack-overflow on x86-64 Linux with 8MB stack *)
+    let orig = `Raw32 (make_list [] 10_000_000) in
+    let packed = pack orig in
+    assert_equal orig (unpack packed)
+  end;
 ]
