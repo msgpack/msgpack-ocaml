@@ -6,8 +6,6 @@ val fst : ('a1 * 'a2) -> 'a1
 
 val snd : ('a1 * 'a2) -> 'a2
 
-val length : 'a1 list -> int
-
 val app : 'a1 list -> 'a1 list -> 'a1 list
 
 type comparison =
@@ -570,7 +568,11 @@ module N :
   val min_dec : n -> n -> bool
  end
 
-val flat_map : ('a1 -> 'a2 list) -> 'a1 list -> 'a2 list
+val rev_append : 'a1 list -> 'a1 list -> 'a1 list
+
+val rev' : 'a1 list -> 'a1 list
+
+val fold_left : ('a1 -> 'a2 -> 'a1) -> 'a2 list -> 'a1 -> 'a1
 
 val eucl_dev : int -> int -> (int * int)
 
@@ -594,6 +596,14 @@ val n_of_digits : bool list -> n
 val n_of_ascii : ascii -> n
 
 val nat_of_ascii : ascii -> int
+
+val length_tailrec : 'a1 list -> int
+
+val rev_tailrec : 'a1 list -> 'a1 list
+
+val app_tailrec : 'a1 list -> 'a1 list -> 'a1 list
+
+val flat_map_tailrec : ('a1 -> 'a2 list) -> 'a1 list -> 'a2 list
 
 val take : int -> 'a1 list -> 'a1 list
 

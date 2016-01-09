@@ -4,10 +4,10 @@ Require Import ListUtil Object MultiByte Util SerializeSpec Pow SerializedList P
 Open Scope char_scope.
 
 Definition compact (xs : list object) : list ascii8 :=
-  List.flat_map (fun x => match x with
-                            FixRaw xs =>  xs
-                            | _ => []
-                          end)
+  flat_map_tailrec (fun x => match x with
+                               | FixRaw xs =>  xs
+                               | _ => []
+                             end)
   xs.
 
 Fixpoint deserialize (n : nat) (xs : list ascii8) {struct xs} :=
@@ -327,6 +327,9 @@ Qed.
 Lemma compact_eq : forall xs,
   compact (List.map (fun x => FixRaw [ x ]) xs) = xs.
 Proof with auto.
+intros.
+unfold compact.
+rewrite flat_map_tailrec_equiv.
 induction xs; [ reflexivity | intros ].
 simpl.
 rewrite IHxs...

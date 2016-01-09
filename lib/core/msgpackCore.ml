@@ -17,13 +17,12 @@ let fst = function
 let snd = function
 | (x, y) -> y
 
-(** val length : 'a1 list -> int **)
-
-let rec length = List.length
-
 (** val app : 'a1 list -> 'a1 list -> 'a1 list **)
 
-let rec app = (fun l m -> List.rev (List.rev_append m (List.rev l)))
+let rec app l m =
+  match l with
+  | [] -> m
+  | a::l1 -> a::(app l1 m)
 
 type comparison =
 | Eq
@@ -2052,9 +2051,24 @@ module N =
     Private_Dec.min_dec
  end
 
-(** val flat_map : ('a1 -> 'a2 list) -> 'a1 list -> 'a2 list **)
+(** val rev_append : 'a1 list -> 'a1 list -> 'a1 list **)
 
-let rec flat_map = (fun f xs -> List.rev (List.fold_left (fun acc x -> List.rev_append (f x) acc) [] xs))
+let rec rev_append l l' =
+  match l with
+  | [] -> l'
+  | a::l0 -> rev_append l0 (a::l')
+
+(** val rev' : 'a1 list -> 'a1 list **)
+
+let rev' l =
+  rev_append l []
+
+(** val fold_left : ('a1 -> 'a2 -> 'a1) -> 'a2 list -> 'a1 -> 'a1 **)
+
+let rec fold_left f l a0 =
+  match l with
+  | [] -> a0
+  | b::t0 -> fold_left f t0 (f a0 b)
 
 (** val eucl_dev : int -> int -> (int * int) **)
 
@@ -2124,6 +2138,26 @@ let n_of_ascii = function
 
 let nat_of_ascii a =
   N.to_nat (n_of_ascii a)
+
+(** val length_tailrec : 'a1 list -> int **)
+
+let length_tailrec xs =
+  fold_left (fun x x0 -> Pervasives.succ x) xs 0
+
+(** val rev_tailrec : 'a1 list -> 'a1 list **)
+
+let rev_tailrec xs =
+  rev' xs
+
+(** val app_tailrec : 'a1 list -> 'a1 list -> 'a1 list **)
+
+let app_tailrec xs ys =
+  rev_tailrec (rev_append ys (rev_tailrec xs))
+
+(** val flat_map_tailrec : ('a1 -> 'a2 list) -> 'a1 list -> 'a2 list **)
+
+let flat_map_tailrec f xs =
+  rev_tailrec (fold_left (fun acc x -> rev_append (f x) acc) xs [])
 
 (** val take : int -> 'a1 list -> 'a1 list **)
 
@@ -2337,56 +2371,65 @@ let rec serialize = function
   (Ascii (true, true, false, true, false, false, true,
     true))::(list_of_ascii64 c)
 | FixRaw xs ->
-  let Ascii (b1, b2, b3, b4, b5, b, b0, b6) = atat ascii8_of_nat (length xs)
+  let Ascii (b1, b2, b3, b4, b5, b, b0, b6) =
+    atat ascii8_of_nat (length_tailrec xs)
   in
   (Ascii (b1, b2, b3, b4, b5, true, false, true))::xs
 | Raw16 xs ->
-  let (s1, s2) = atat ascii16_of_nat (length xs) in
+  let (s1, s2) = atat ascii16_of_nat (length_tailrec xs) in
   (Ascii (false, true, false, true, true, false, true, true))::(s1::(s2::xs))
 | Raw32 xs ->
-  let (p, p0) = atat ascii32_of_nat (length xs) in
+  let (p, p0) = atat ascii32_of_nat (length_tailrec xs) in
   let (s1, s2) = p in
   let (s3, s4) = p0 in
   (Ascii (true, true, false, true, true, false, true,
   true))::(s1::(s2::(s3::(s4::xs))))
 | FixArray xs ->
-  let ys = flat_map serialize xs in
-  let Ascii (b1, b2, b3, b4, b, b0, b5, b6) = atat ascii8_of_nat (length xs)
+  let ys = flat_map_tailrec serialize xs in
+  let Ascii (b1, b2, b3, b4, b, b0, b5, b6) =
+    atat ascii8_of_nat (length_tailrec xs)
   in
   (Ascii (b1, b2, b3, b4, true, false, false, true))::ys
 | Array16 xs ->
-  let ys = flat_map serialize xs in
-  let (s1, s2) = ascii16_of_nat (length xs) in
+  let ys = flat_map_tailrec serialize xs in
+  let (s1, s2) = ascii16_of_nat (length_tailrec xs) in
   (Ascii (false, false, true, true, true, false, true, true))::(s1::(s2::ys))
 | Array32 xs ->
-  let ys = flat_map serialize xs in
-  let (p, p0) = atat ascii32_of_nat (length xs) in
+  let ys = flat_map_tailrec serialize xs in
+  let (p, p0) = atat ascii32_of_nat (length_tailrec xs) in
   let (s1, s2) = p in
   let (s3, s4) = p0 in
   (Ascii (true, false, true, true, true, false, true,
   true))::(s1::(s2::(s3::(s4::ys))))
 | FixMap xs ->
-  let ys = flat_map (fun p -> app (serialize (fst p)) (serialize (snd p))) xs
+  let ys =
+    flat_map_tailrec (fun p ->
+      app_tailrec (serialize (fst p)) (serialize (snd p))) xs
   in
-  let Ascii (b1, b2, b3, b4, b, b0, b5, b6) = atat ascii8_of_nat (length xs)
+  let Ascii (b1, b2, b3, b4, b, b0, b5, b6) =
+    atat ascii8_of_nat (length_tailrec xs)
   in
   (Ascii (b1, b2, b3, b4, false, false, false, true))::ys
 | Map16 xs ->
-  let ys = flat_map (fun p -> app (serialize (fst p)) (serialize (snd p))) xs
+  let ys =
+    flat_map_tailrec (fun p ->
+      app_tailrec (serialize (fst p)) (serialize (snd p))) xs
   in
-  let (s1, s2) = ascii16_of_nat (length xs) in
+  let (s1, s2) = ascii16_of_nat (length_tailrec xs) in
   (Ascii (false, true, true, true, true, false, true, true))::(s1::(s2::ys))
 | Map32 xs ->
-  let ys = flat_map (fun p -> app (serialize (fst p)) (serialize (snd p))) xs
+  let ys =
+    flat_map_tailrec (fun p ->
+      app_tailrec (serialize (fst p)) (serialize (snd p))) xs
   in
-  let s = atat ascii32_of_nat (length xs) in
+  let s = atat ascii32_of_nat (length_tailrec xs) in
   (Ascii (true, true, true, true, true, false, true,
   true))::((fst (fst s))::((snd (fst s))::((fst (snd s))::((snd (snd s))::ys))))
 
 (** val compact : object0 list -> ascii8 list **)
 
 let compact xs =
-  flat_map (fun x ->
+  flat_map_tailrec (fun x ->
     match x with
     | FixRaw xs0 -> xs0
     | _ -> []) xs

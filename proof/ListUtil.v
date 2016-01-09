@@ -3,6 +3,70 @@ Require Import List Omega.
 Notation "[ ]" := nil : list_scope.
 Notation "[ a ; .. ; b ]" := (a :: .. (b :: []) ..) : list_scope.
 
+Definition length_tailrec {A} (xs:list A) :=
+  fold_left (fun x _ => S x) xs 0.
+
+Lemma length_tailrec_equiv: forall A (xs: list A),
+  length_tailrec xs = length xs.
+Proof.
+exact fold_left_length.
+Qed.
+
+Definition rev_tailrec {A} (xs: list A) := List.rev' xs.
+
+Lemma rev_tailrec_equiv: forall A (xs: list A),
+  rev_tailrec xs = rev xs.
+Proof.
+  intros.
+  rewrite rev_alt.
+  reflexivity.
+Qed.
+
+Definition app_tailrec {A} (xs ys: list A) :=
+  rev_tailrec (rev_append ys (rev_tailrec xs)).
+
+Lemma app_tailrec_equiv: forall A (xs ys: list A),
+  app_tailrec xs ys = app xs ys.
+Proof.
+  intros.
+  unfold app_tailrec.
+  rewrite !rev_tailrec_equiv, rev_append_rev.
+  rewrite <-distr_rev, rev_involutive.
+  reflexivity.
+Qed.
+
+Definition flat_map_tailrec {A B} (f: A -> list B) (xs: list A) :=
+  rev_tailrec (fold_left (fun acc x => rev_append (f x) acc) xs []).
+
+Lemma flat_map_tailrec_equiv: forall A B (f: A -> list B) (xs: list A),
+  flat_map_tailrec f xs = flat_map f xs.
+Proof.
+  intros.
+  unfold flat_map_tailrec.
+  rewrite rev_tailrec_equiv.
+  set (body := fun acc x => rev_append (f x) acc).
+  assert (Hlemma: forall xs ys zs, fold_left body xs (ys ++ zs) = fold_left body xs ys ++ zs).
+  { clear.
+    intros xs.
+    induction xs; simpl.
+    - reflexivity.
+    - intros.
+      rewrite <-IHxs.
+      f_equal.
+      unfold body; simpl.
+      rewrite !rev_append_rev, app_assoc.
+      reflexivity.
+  }
+  induction xs; simpl.
+  - reflexivity.
+  - rewrite <-IHxs.
+    rewrite <-(rev_involutive (f a)).
+    rewrite (rev_alt (f a)).
+    rewrite <-rev_app_distr.
+    rewrite <-Hlemma.
+    reflexivity.
+Qed.
+
 Lemma app_same : forall A (xs ys zs : list A),
   xs ++  ys = xs ++ zs -> ys = zs.
 Proof.

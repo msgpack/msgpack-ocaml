@@ -23,66 +23,66 @@ Fixpoint serialize (obj : object) : list ascii8 :=
     | Float  c => "202"::list_of_ascii32 c
     | Double c => "203"::list_of_ascii64 c
     | FixRaw xs =>
-      match ascii8_of_nat @@ length xs with
+      match ascii8_of_nat @@ length_tailrec xs with
         | Ascii b1 b2 b3 b4 b5 _ _ _ =>
           (Ascii b1 b2 b3 b4 b5 true false true)::xs
       end
     | Raw16 xs =>
       let (s1,s2) :=
-        ascii16_of_nat @@ length xs
+        ascii16_of_nat @@ length_tailrec xs
       in
         "218"::s1::s2::xs
     | Raw32 xs =>
-      match ascii32_of_nat @@ length xs with
+      match ascii32_of_nat @@ length_tailrec xs with
         | ((s1,s2),(s3,s4)) =>
           "219"::s1::s2::s3::s4::xs
       end
     | FixArray xs =>
       let ys :=
-        flat_map serialize xs
+        flat_map_tailrec serialize xs
       in
-      match ascii8_of_nat @@ length xs with
+      match ascii8_of_nat @@ length_tailrec xs with
         | Ascii b1 b2 b3 b4 _ _ _ _ =>
           (Ascii b1 b2 b3 b4 true false false true)::ys
       end
     | Array16 xs =>
       let ys :=
-        flat_map serialize xs
+        flat_map_tailrec serialize xs
       in
       let (s1, s2) :=
-        ascii16_of_nat (length  xs)
+        ascii16_of_nat (length_tailrec xs)
       in
         "220"::s1::s2::ys
     | Array32 xs =>
       let ys :=
-        flat_map serialize xs
+        flat_map_tailrec serialize xs
       in
-      match ascii32_of_nat @@ length xs with
+      match ascii32_of_nat @@ length_tailrec xs with
         | ((s1,s2),(s3,s4)) =>
          "221"::s1::s2::s3::s4::ys
       end
     | FixMap xs =>
       let ys :=
-        flat_map (fun p => serialize (fst p) ++ serialize (snd p)) xs
+        flat_map_tailrec (fun p => app_tailrec (serialize (fst p)) (serialize (snd p))) xs
       in
-      match ascii8_of_nat @@ length xs with
+      match ascii8_of_nat @@ length_tailrec xs with
         | Ascii b1 b2 b3 b4 _ _ _ _ =>
           (Ascii b1 b2 b3 b4 false false false true)::ys
       end
     | Map16 xs =>
       let ys :=
-        flat_map (fun p => serialize (fst p) ++ serialize (snd p)) xs
+        flat_map_tailrec (fun p => app_tailrec (serialize (fst p)) (serialize (snd p))) xs
       in
       let (s1, s2) :=
-        ascii16_of_nat (length  xs)
+        ascii16_of_nat (length_tailrec xs)
       in
         "222"::s1::s2::ys
     | Map32 xs =>
       let ys :=
-        flat_map (fun p => serialize (fst p) ++ serialize (snd p)) xs
+        flat_map_tailrec (fun p => app_tailrec (serialize (fst p)) (serialize (snd p))) xs
       in
       let s :=
-        ascii32_of_nat @@ length xs
+        ascii32_of_nat @@ length_tailrec xs
       in
         "223"::(fst (fst s))::(snd (fst s))::(fst (snd s))::(snd (snd s))::ys
   end.
@@ -197,6 +197,7 @@ unfold Correct.
 intros.
 inversion H0.
 simpl.
+rewrite length_tailrec_equiv.
 unfold atat.
 rewrite_for (ascii8_of_nat (length cs)).
 reflexivity.
@@ -210,6 +211,7 @@ unfold Correct.
 intros.
 inversion H0.
 simpl.
+rewrite length_tailrec_equiv.
 unfold atat.
 rewrite_for (ascii16_of_nat (length cs)).
 reflexivity.
@@ -223,6 +225,7 @@ unfold Correct.
 intros.
 inversion H0.
 simpl.
+rewrite length_tailrec_equiv.
 unfold atat.
 rewrite_for (ascii32_of_nat (length cs)).
 reflexivity.
@@ -294,12 +297,15 @@ Proof.
 unfold Correct.
 intros.
 simpl in *.
+rewrite length_tailrec_equiv in *.
+simpl.
 unfold atat in *.
 rewrite_for (ascii8_of_nat (S (length xs))).
 apply H2 in H1.
 apply H4 in H3.
 rewrite_for (ascii8_of_nat (length xs)).
 rewrite_for y.
+rewrite flat_map_tailrec_equiv in *.
 inversion H3.
 reflexivity.
 Qed.
@@ -317,11 +323,14 @@ Proof.
 unfold Correct.
 intros.
 simpl in *.
+rewrite length_tailrec_equiv in *.
+simpl.
 rewrite_for (ascii16_of_nat (S (length xs))).
 apply H2 in H1; auto.
 apply H4 in H3; auto.
 rewrite_for (ascii16_of_nat (length xs)).
 rewrite_for y.
+rewrite flat_map_tailrec_equiv in *.
 inversion H3.
 reflexivity.
 Qed.
@@ -338,12 +347,15 @@ Proof.
   unfold Correct.
   intros.
   simpl in *.
+  rewrite length_tailrec_equiv in *.
+  simpl.
   unfold atat in *.
   rewrite_for (ascii32_of_nat (S (length xs))).
   apply H2 in H1; auto.
   apply H4 in H3; auto.
   rewrite_for y.
   rewrite <- H in H3.
+  rewrite flat_map_tailrec_equiv in *.
   inversion H3.
   auto.
 Qed.
@@ -360,6 +372,8 @@ Proof.
 unfold Correct.
 intros.
 simpl in *.
+rewrite length_tailrec_equiv in *.
+simpl.
 unfold atat in *.
 rewrite_for (ascii8_of_nat (S (length xs))).
 apply H2 in H1.
@@ -368,6 +382,9 @@ apply H6 in H5.
 rewrite_for (ascii8_of_nat (length xs)).
 rewrite_for y1.
 rewrite_for y2.
+rewrite flat_map_tailrec_equiv in *.
+simpl.
+rewrite app_tailrec_equiv in *.
 inversion H5.
 rewrite <- app_assoc.
 reflexivity.
@@ -387,6 +404,8 @@ Proof.
 unfold Correct.
 intros.
 simpl in *.
+rewrite length_tailrec_equiv in *.
+simpl.
 rewrite_for (ascii16_of_nat (S (length xs))).
 apply H2 in H1.
 apply H4 in H3.
@@ -394,6 +413,9 @@ apply H6 in H5.
 rewrite_for (ascii16_of_nat (length xs)).
 rewrite_for y1.
 rewrite_for y2.
+rewrite flat_map_tailrec_equiv in *.
+simpl.
+rewrite app_tailrec_equiv in *.
 inversion H5.
 rewrite <- app_assoc.
 reflexivity.
@@ -414,19 +436,26 @@ intros.
 unfold Correct.
 intros.
 simpl in *.
+rewrite length_tailrec_equiv in *.
+simpl.
 unfold atat in *.
 rewrite_for (ascii32_of_nat (S (length xs))).
 apply H2 in H1.
 apply H4 in H3.
 apply H6 in H5.
+rewrite flat_map_tailrec_equiv.
 simpl.
+rewrite app_tailrec_equiv in *.
 rewrite_for y1.
 rewrite_for y2.
 rewrite <- app_assoc.
 simpl in H5.
+rewrite length_tailrec_equiv in H5.
+simpl in H5.
 unfold atat in H5.
 rewrite_for (ascii32_of_nat (length xs)).
 simpl in H5.
+rewrite flat_map_tailrec_equiv in *.
 inversion H5.
 reflexivity.
 Qed.
