@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 038a1bc9f8f0680aacc01e9de3344404) *)
+(* DO NOT EDIT (digest: 0be0aa26402e45fbf1d3cdf1e44ae0f7) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -613,35 +613,53 @@ let package_default =
      flags =
        [
           (["oasis_library_msgpack_byte"; "ocaml"; "link"; "byte"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a-27-39-4"; A "-annot"])]);
+            [
+               (OASISExpr.EBool true,
+                 S [A "-g"; A "-w"; A "+a-27-39-4"; A "-annot"])
+            ]);
           (["oasis_library_msgpack_native"; "ocaml"; "link"; "native"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a-27-39-4"; A "-annot"])]);
+            [
+               (OASISExpr.EBool true,
+                 S [A "-g"; A "-w"; A "+a-27-39-4"; A "-annot"])
+            ]);
           (["oasis_library_msgpack_byte"; "ocaml"; "ocamldep"; "byte"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a-27-39-4"; A "-annot"])]);
+            [
+               (OASISExpr.EBool true,
+                 S [A "-g"; A "-w"; A "+a-27-39-4"; A "-annot"])
+            ]);
           (["oasis_library_msgpack_native"; "ocaml"; "ocamldep"; "native"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a-27-39-4"; A "-annot"])]);
+            [
+               (OASISExpr.EBool true,
+                 S [A "-g"; A "-w"; A "+a-27-39-4"; A "-annot"])
+            ]);
           (["oasis_library_msgpack_byte"; "ocaml"; "compile"; "byte"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a-27-39-4"; A "-annot"])]);
+            [
+               (OASISExpr.EBool true,
+                 S [A "-g"; A "-w"; A "+a-27-39-4"; A "-annot"])
+            ]);
           (["oasis_library_msgpack_native"; "ocaml"; "compile"; "native"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a-27-39-4"; A "-annot"])]);
+            [
+               (OASISExpr.EBool true,
+                 S [A "-g"; A "-w"; A "+a-27-39-4"; A "-annot"])
+            ]);
           (["oasis_library_msgpack_conv_byte"; "ocaml"; "link"; "byte"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+            [(OASISExpr.EBool true, S [A "-g"; A "-w"; A "+a"; A "-annot"])]);
           (["oasis_library_msgpack_conv_native"; "ocaml"; "link"; "native"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+            [(OASISExpr.EBool true, S [A "-g"; A "-w"; A "+a"; A "-annot"])]);
           (["oasis_library_msgpack_conv_byte"; "ocaml"; "ocamldep"; "byte"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+            [(OASISExpr.EBool true, S [A "-g"; A "-w"; A "+a"; A "-annot"])]);
           ([
               "oasis_library_msgpack_conv_native";
               "ocaml";
               "ocamldep";
               "native"
            ],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+            [(OASISExpr.EBool true, S [A "-g"; A "-w"; A "+a"; A "-annot"])]);
           (["oasis_library_msgpack_conv_byte"; "ocaml"; "compile"; "byte"],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])]);
+            [(OASISExpr.EBool true, S [A "-g"; A "-w"; A "+a"; A "-annot"])]);
           (["oasis_library_msgpack_conv_native"; "ocaml"; "compile"; "native"
            ],
-            [(OASISExpr.EBool true, S [A "-w"; A "+a"; A "-annot"])])
+            [(OASISExpr.EBool true, S [A "-g"; A "-w"; A "+a"; A "-annot"])])
        ];
      includes =
        [
@@ -656,6 +674,6 @@ let conf = {MyOCamlbuildFindlib.no_automatic_syntax = false}
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default conf package_default;;
 
-# 660 "myocamlbuild.ml"
+# 678 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;
