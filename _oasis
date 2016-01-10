@@ -41,8 +41,8 @@ Library msgpack
   InternalModules: HList, MsgpackCore, Pack, Serialize, MsgpackConfig, Base
   CompiledObject: best
   # supress warning for Coq-extracted code
-  ByteOpt: -w +a-27-39-4 -annot
-  NativeOpt: -w +a-27-39-4 -annot
+  ByteOpt: -g -w +a-27-39-4 -annot
+  NativeOpt: -g -w +a-27-39-4 -annot
   BuildDepends: num
 
 Library msgpack_conv
@@ -52,8 +52,8 @@ Library msgpack_conv
   Modules: Msgpack_conv
   InternalModules: Encode, Decode
   CompiledObject: best
-  ByteOpt: -w +a -annot
-  NativeOpt: -w +a -annot
+  ByteOpt: -g -w +a -annot
+  NativeOpt: -g -w +a -annot
 
   # install as msgpack.conv
   FindlibName: conv

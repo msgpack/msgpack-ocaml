@@ -24,5 +24,6 @@ let serialize_string obj =
   obj
   +> Pack.pack
   +> MsgpackCore.serialize
-  +> List.map Pack.char_of_ascii8
+  +> List.rev_map Pack.char_of_ascii8
+  +> List.rev
   +> implode

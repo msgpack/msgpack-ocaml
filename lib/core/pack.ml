@@ -28,6 +28,9 @@ type t =
   | `Map16 of (t * t) list
   | `Map32 of (t * t) list ]
 
+let map f l =
+  List.rev (List.rev_map f l)
+
 let ascii8 n =
   Ascii(n land 0b0000_0001 <> 0,
 	n land 0b0000_0010 <> 0,
@@ -129,23 +132,23 @@ let rec pack = function
   | `Double n ->
       Double (ascii64_of_int64 @@ Int64.bits_of_float n)
   | `FixRaw cs ->
-      FixRaw (List.map ascii8_of_char cs)
+      FixRaw (map ascii8_of_char cs)
   | `Raw16 cs ->
-      Raw16 (List.map ascii8_of_char cs)
+      Raw16 (map ascii8_of_char cs)
   | `Raw32 cs ->
-      Raw32 (List.map ascii8_of_char cs)
+      Raw32 (map ascii8_of_char cs)
   | `FixArray xs ->
-      FixArray (List.map pack xs)
+      FixArray (map pack xs)
   | `Array16 xs ->
-      Array16 (List.map pack xs)
+      Array16 (map pack xs)
   | `Array32 xs ->
-      Array32 (List.map pack xs)
+      Array32 (map pack xs)
   | `FixMap xs ->
-      FixMap (List.map (fun (x,y) -> (pack x, pack y)) xs)
+      FixMap (map (fun (x,y) -> (pack x, pack y)) xs)
   | `Map16 xs ->
-      Map16 (List.map (fun (x,y) -> (pack x, pack y)) xs)
+      Map16 (map (fun (x,y) -> (pack x, pack y)) xs)
   | `Map32 xs ->
-      Map32 (List.map (fun (x,y) -> (pack x, pack y)) xs)
+      Map32 (map (fun (x,y) -> (pack x, pack y)) xs)
 
 let of_ascii8 (Ascii(b1,b2,b3,b4,b5,b6,b7,b8)) =
   List.fold_left (fun x y -> 2 * x + (if y then 1 else 0)) 0 [ b8; b7; b6; b5; b4; b3; b2; b1 ]
@@ -195,12 +198,12 @@ let rec unpack  = function
   | Int64  c -> `Int64 (int64_of_ascii64 c)
   | Float  c -> `Float (Int32.float_of_bits (int32_of_ascii32 c))
   | Double c -> `Double (Int64.float_of_bits (int64_of_ascii64 c))
-  | FixRaw cs -> `FixRaw (List.map char_of_ascii8 cs)
-  | Raw16  cs -> `Raw16 (List.map char_of_ascii8 cs)
-  | Raw32  cs -> `Raw32 (List.map char_of_ascii8 cs)
-  | FixArray xs -> `FixArray (List.map unpack xs)
-  | Array16 xs -> `Array16 (List.map unpack xs)
-  | Array32 xs -> `Array32 (List.map unpack xs)
-  | FixMap  xs -> `FixMap (List.map (fun (x,y) -> (unpack x, unpack y)) xs)
-  | Map16  xs -> `Map16 (List.map (fun (x,y) -> (unpack x, unpack y)) xs)
-  | Map32  xs -> `Map32 (List.map (fun (x,y) -> (unpack x, unpack y)) xs)
+  | FixRaw cs -> `FixRaw (map char_of_ascii8 cs)
+  | Raw16  cs -> `Raw16 (map char_of_ascii8 cs)
+  | Raw32  cs -> `Raw32 (map char_of_ascii8 cs)
+  | FixArray xs -> `FixArray (map unpack xs)
+  | Array16 xs -> `Array16 (map unpack xs)
+  | Array32 xs -> `Array32 (map unpack xs)
+  | FixMap  xs -> `FixMap (map (fun (x,y) -> (unpack x, unpack y)) xs)
+  | Map16  xs -> `Map16 (map (fun (x,y) -> (unpack x, unpack y)) xs)
+  | Map32  xs -> `Map32 (map (fun (x,y) -> (unpack x, unpack y)) xs)
