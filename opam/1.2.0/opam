@@ -1,0 +1,19 @@
+opam-version: "1.2"
+name: "msgpack"
+version: "1.2.0"
+maintainer: "mzp <mzp.ppp@gmail.com>"
+author: "mzp <mzp.ppp@gmail.com>"
+homepage: "http://github.com/msgpack/msgpack-ocaml/"
+build: [
+  ["ocaml" "setup.ml" "-configure" "--prefix" "%{prefix}%" "--enable-core" "--%{meta_conv:enable}%-conv"]
+  ["ocaml" "setup.ml" "-build"]
+]
+install: [
+  ["ocaml" "setup.ml" "-install"]
+]
+remove: [
+  ["ocamlfind" "remove" "msgpack"]
+]
+depends: ["ocamlfind" "camlp4"]
+
+depopts: ["meta_conv"]
