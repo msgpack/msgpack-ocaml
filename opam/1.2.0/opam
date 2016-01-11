@@ -1,9 +1,9 @@
 opam-version: "1.2"
-name: "msgpack"
-version: "1.2.0"
 maintainer: "mzp <mzp.ppp@gmail.com>"
 author: "mzp <mzp.ppp@gmail.com>"
 homepage: "http://github.com/msgpack/msgpack-ocaml/"
+dev-repo: "http://github.com/msgpack/msgpack-ocaml/"
+bug-reports: "https://github.com/msgpack/msgpack-ocaml/issues"
 build: [
   ["ocaml" "setup.ml" "-configure" "--prefix" "%{prefix}%" "--enable-core" "--%{meta_conv:enable}%-conv"]
   ["ocaml" "setup.ml" "-build"]
