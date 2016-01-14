@@ -32,8 +32,4 @@ Definition get_contents := lmap ascii_of_mlchar get_contents_mlchars.
 
 Definition id {A:Type} (x:A) := x.
 
-Definition atat {A B:Type} (f:A -> B) (x: A) := f x.
-Infix "@@" := atat (right associativity, at level 75).
-
-Definition doll {A B C:Type} (g:B->C) (f:A->B) (x:A) := g (f x).
-Infix "$" := doll (at level 75).
+Notation "f @@ x" := (f x) (right associativity, at level 75, only parsing).

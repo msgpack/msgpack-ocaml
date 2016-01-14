@@ -2321,11 +2321,6 @@ type object0 =
 | Map16 of (object0 * object0) list
 | Map32 of (object0 * object0) list
 
-(** val atat : ('a1 -> 'a2) -> 'a1 -> 'a2 **)
-
-let atat f x =
-  f x
-
 (** val serialize : object0 -> ascii8 list **)
 
 let rec serialize = function
@@ -2372,14 +2367,14 @@ let rec serialize = function
     true))::(list_of_ascii64 c)
 | FixRaw xs ->
   let Ascii (b1, b2, b3, b4, b5, b, b0, b6) =
-    atat ascii8_of_nat (length_tailrec xs)
+    ascii8_of_nat (length_tailrec xs)
   in
   (Ascii (b1, b2, b3, b4, b5, true, false, true))::xs
 | Raw16 xs ->
-  let (s1, s2) = atat ascii16_of_nat (length_tailrec xs) in
+  let (s1, s2) = ascii16_of_nat (length_tailrec xs) in
   (Ascii (false, true, false, true, true, false, true, true))::(s1::(s2::xs))
 | Raw32 xs ->
-  let (p, p0) = atat ascii32_of_nat (length_tailrec xs) in
+  let (p, p0) = ascii32_of_nat (length_tailrec xs) in
   let (s1, s2) = p in
   let (s3, s4) = p0 in
   (Ascii (true, true, false, true, true, false, true,
@@ -2387,7 +2382,7 @@ let rec serialize = function
 | FixArray xs ->
   let ys = flat_map_tailrec serialize xs in
   let Ascii (b1, b2, b3, b4, b, b0, b5, b6) =
-    atat ascii8_of_nat (length_tailrec xs)
+    ascii8_of_nat (length_tailrec xs)
   in
   (Ascii (b1, b2, b3, b4, true, false, false, true))::ys
 | Array16 xs ->
@@ -2396,7 +2391,7 @@ let rec serialize = function
   (Ascii (false, false, true, true, true, false, true, true))::(s1::(s2::ys))
 | Array32 xs ->
   let ys = flat_map_tailrec serialize xs in
-  let (p, p0) = atat ascii32_of_nat (length_tailrec xs) in
+  let (p, p0) = ascii32_of_nat (length_tailrec xs) in
   let (s1, s2) = p in
   let (s3, s4) = p0 in
   (Ascii (true, false, true, true, true, false, true,
@@ -2407,7 +2402,7 @@ let rec serialize = function
       app_tailrec (serialize (fst p)) (serialize (snd p))) xs
   in
   let Ascii (b1, b2, b3, b4, b, b0, b5, b6) =
-    atat ascii8_of_nat (length_tailrec xs)
+    ascii8_of_nat (length_tailrec xs)
   in
   (Ascii (b1, b2, b3, b4, false, false, false, true))::ys
 | Map16 xs ->
@@ -2422,7 +2417,7 @@ let rec serialize = function
     flat_map_tailrec (fun p ->
       app_tailrec (serialize (fst p)) (serialize (snd p))) xs
   in
-  let s = atat ascii32_of_nat (length_tailrec xs) in
+  let s = ascii32_of_nat (length_tailrec xs) in
   (Ascii (true, true, true, true, true, false, true,
   true))::((fst (fst s))::((snd (fst s))::((fst (snd s))::((snd (snd s))::ys))))
 
@@ -2464,7 +2459,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -2491,12 +2486,11 @@ let rec deserialize n0 xs =
                                                               s4))
                                                           in
                                                           let (zs, ws) =
-                                                            atat
-                                                              (split_at
-                                                                (mult
-                                                                  (Pervasives.succ
-                                                                  (Pervasives.succ
-                                                                  0)) n1))
+                                                            split_at
+                                                              (mult
+                                                                (Pervasives.succ
+                                                                (Pervasives.succ
+                                                                0)) n1)
                                                               (deserialize 0
                                                                 ys0)
                                                           in
@@ -2512,7 +2506,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -2535,7 +2529,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -2588,11 +2582,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -2615,7 +2608,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -2635,7 +2628,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -2658,7 +2651,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -2678,11 +2671,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -2706,7 +2698,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -2733,8 +2725,7 @@ let rec deserialize n0 xs =
                                                               s4))
                                                           in
                                                           let (zs, ws) =
-                                                            atat
-                                                              (split_at n1)
+                                                            split_at n1
                                                               (deserialize n1
                                                                 ys0)
                                                           in
@@ -2750,7 +2741,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -2773,7 +2764,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -2826,11 +2817,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -2853,7 +2843,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -2906,7 +2896,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -2929,7 +2919,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -2949,11 +2939,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -2978,7 +2967,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3005,8 +2994,7 @@ let rec deserialize n0 xs =
                                                               s4))
                                                           in
                                                           let (zs, ws) =
-                                                            atat
-                                                              (split_at n1)
+                                                            split_at n1
                                                               (deserialize 0
                                                                 ys0)
                                                           in
@@ -3021,7 +3009,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -3044,7 +3032,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3072,11 +3060,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -3099,7 +3086,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3119,7 +3106,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -3142,7 +3129,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3162,11 +3149,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -3190,7 +3176,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3210,7 +3196,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -3233,7 +3219,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3253,11 +3239,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -3280,7 +3265,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3308,7 +3293,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -3331,7 +3316,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3351,11 +3336,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -3381,7 +3365,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3400,12 +3384,11 @@ let rec deserialize n0 xs =
                                                       nat_of_ascii16 (s1, s2)
                                                     in
                                                     let (zs, ws) =
-                                                      atat
-                                                        (split_at
-                                                          (mult
-                                                            (Pervasives.succ
-                                                            (Pervasives.succ
-                                                            0)) n1))
+                                                      split_at
+                                                        (mult
+                                                          (Pervasives.succ
+                                                          (Pervasives.succ
+                                                          0)) n1)
                                                         (deserialize 0 ys0)
                                                     in
                                                     (Map16 (pair zs))::ws))
@@ -3419,7 +3402,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -3442,7 +3425,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3477,11 +3460,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -3504,7 +3486,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3524,7 +3506,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -3547,7 +3529,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3567,11 +3549,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -3595,7 +3576,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3614,7 +3595,7 @@ let rec deserialize n0 xs =
                                                       nat_of_ascii16 (s1, s2)
                                                     in
                                                     let (zs, ws) =
-                                                      atat (split_at n1)
+                                                      split_at n1
                                                         (deserialize n1 ys0)
                                                     in
                                                     (Raw16 (compact zs))::ws))
@@ -3628,7 +3609,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -3651,7 +3632,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3686,11 +3667,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -3713,7 +3693,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3748,7 +3728,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -3771,7 +3751,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3792,11 +3772,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -3821,7 +3800,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3840,7 +3819,7 @@ let rec deserialize n0 xs =
                                                       nat_of_ascii16 (s1, s2)
                                                     in
                                                     let (zs, ws) =
-                                                      atat (split_at n1)
+                                                      split_at n1
                                                         (deserialize 0 ys0)
                                                     in
                                                     (Array16 zs)::ws))
@@ -3854,7 +3833,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -3877,7 +3856,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3901,11 +3880,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -3928,7 +3906,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3948,7 +3926,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -3971,7 +3949,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -3991,11 +3969,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -4019,7 +3996,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -4039,7 +4016,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -4062,7 +4039,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -4082,11 +4059,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,
@@ -4109,7 +4085,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -4133,7 +4109,7 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize 0 ys)
                                               in
                                               (FixArray zs)::ws
@@ -4156,7 +4132,7 @@ let rec deserialize n0 xs =
                                                   false))
                                               in
                                               let (zs, ws) =
-                                                atat (split_at n1)
+                                                split_at n1
                                                   (deserialize n1 ys)
                                               in
                                               (FixRaw (compact zs))::ws
@@ -4176,11 +4152,10 @@ let rec deserialize n0 xs =
                                                   false, false))
                                               in
                                               let (zs, ws) =
-                                                atat
-                                                  (split_at
-                                                    (mult (Pervasives.succ
-                                                      (Pervasives.succ 0))
-                                                      n1)) (deserialize 0 ys)
+                                                split_at
+                                                  (mult (Pervasives.succ
+                                                    (Pervasives.succ 0)) n1)
+                                                  (deserialize 0 ys)
                                               in
                                               (FixMap (pair zs))::ws
                                          else (PFixnum (Ascii (b1, b2, b3,

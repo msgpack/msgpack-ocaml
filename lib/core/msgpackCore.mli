@@ -670,8 +670,6 @@ type object0 =
 | Map16 of (object0 * object0) list
 | Map32 of (object0 * object0) list
 
-val atat : ('a1 -> 'a2) -> 'a1 -> 'a2
-
 val serialize : object0 -> ascii8 list
 
 val compact : object0 list -> ascii8 list

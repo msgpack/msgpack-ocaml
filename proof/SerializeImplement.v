@@ -198,7 +198,6 @@ intros.
 inversion H0.
 simpl.
 rewrite length_tailrec_equiv.
-unfold atat.
 rewrite_for (ascii8_of_nat (length cs)).
 reflexivity.
 Qed.
@@ -212,7 +211,6 @@ intros.
 inversion H0.
 simpl.
 rewrite length_tailrec_equiv.
-unfold atat.
 rewrite_for (ascii16_of_nat (length cs)).
 reflexivity.
 Qed.
@@ -226,7 +224,6 @@ intros.
 inversion H0.
 simpl.
 rewrite length_tailrec_equiv.
-unfold atat.
 rewrite_for (ascii32_of_nat (length cs)).
 reflexivity.
 Qed.
@@ -253,7 +250,6 @@ Proof.
 unfold Correct.
 intros.
 simpl.
-unfold atat.
 rewrite <- ascii8_of_nat_O.
 reflexivity.
 Qed.
@@ -280,7 +276,6 @@ Proof.
 unfold Correct.
 intros.
 simpl.
-unfold atat.
 rewrite <- ascii8_of_nat_O.
 reflexivity.
 Qed.
@@ -299,7 +294,6 @@ intros.
 simpl in *.
 rewrite length_tailrec_equiv in *.
 simpl.
-unfold atat in *.
 rewrite_for (ascii8_of_nat (S (length xs))).
 apply H2 in H1.
 apply H4 in H3.
@@ -349,7 +343,6 @@ Proof.
   simpl in *.
   rewrite length_tailrec_equiv in *.
   simpl.
-  unfold atat in *.
   rewrite_for (ascii32_of_nat (S (length xs))).
   apply H2 in H1; auto.
   apply H4 in H3; auto.
@@ -374,7 +367,6 @@ intros.
 simpl in *.
 rewrite length_tailrec_equiv in *.
 simpl.
-unfold atat in *.
 rewrite_for (ascii8_of_nat (S (length xs))).
 apply H2 in H1.
 apply H4 in H3.
@@ -438,7 +430,6 @@ intros.
 simpl in *.
 rewrite length_tailrec_equiv in *.
 simpl.
-unfold atat in *.
 rewrite_for (ascii32_of_nat (S (length xs))).
 apply H2 in H1.
 apply H4 in H3.
@@ -452,7 +443,6 @@ rewrite <- app_assoc.
 simpl in H5.
 rewrite length_tailrec_equiv in H5.
 simpl in H5.
-unfold atat in H5.
 rewrite_for (ascii32_of_nat (length xs)).
 simpl in H5.
 rewrite flat_map_tailrec_equiv in *.

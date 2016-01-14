@@ -355,7 +355,7 @@ destruct b1,b2,b3,b4,b5;
     (let n := nat_of_ascii8 (ascii8_of_nat (length cs)) in
      let (zs, ws) := split_at n @@ deserialize n (cs++bs) in
      FixRaw (compact zs) :: ws));
-  [ unfold atat, split_at;
+  [ unfold split_at;
     rewrite nat_ascii8_embedding, deserialize_take_length, deserialize_drop_length, compact_eq, <- H13
   | rewrite <- H7])...
 Qed.
@@ -376,7 +376,7 @@ change (deserialize 0 _ ) with
   (let (zs, ws) :=
     split_at (nat_of_ascii16 (s1,s2)) @@ deserialize (nat_of_ascii16 (s1,s2)) (cs++bs) in
     Raw16 (compact zs) :: ws).
-unfold atat, split_at.
+unfold split_at.
 rewrite H7, nat_ascii16_embedding, deserialize_take_length, deserialize_drop_length, compact_eq, H10...
 Qed.
 
@@ -396,7 +396,7 @@ change (deserialize 0 _ ) with
   (let (zs, ws) :=
     split_at (nat_of_ascii32 ((s1,s2),(s3,s4))) @@ deserialize (nat_of_ascii32 ((s1,s2),(s3,s4))) (cs++bs) in
     Raw32 (compact zs) :: ws).
-unfold atat, split_at.
+unfold split_at.
 rewrite H7, nat_ascii32_embedding, deserialize_take_length, deserialize_drop_length, compact_eq, H12...
 Qed.
 
@@ -424,7 +424,7 @@ destruct b1, b2, b3, b4;
       split_at (nat_of_ascii8 (ascii8_of_nat n0)) @@ deserialize 0 bs
     in
       FixArray zs :: ws);
-   [ unfold atat; rewrite H9, nat_ascii8_embedding, <- H12 | rewrite <- H14])...
+   [ rewrite H9, nat_ascii8_embedding, <- H12 | rewrite <- H14])...
 Qed.
 
 Lemma correct_array16 : forall os bs n xs ys s1 s2 ,
@@ -512,7 +512,7 @@ destruct b1, b2, b3, b4;
        split_at (2 * (nat_of_ascii8 (ascii8_of_nat n))) @@ deserialize 0 bs
      in
        FixMap (pair zs) :: ws);
-    [ unfold atat; rewrite nat_ascii8_embedding, H11, <- H13
+    [ rewrite nat_ascii8_embedding, H11, <- H13
     | rewrite <- H16 ])...
 Qed.
 
@@ -544,7 +544,6 @@ apply H in H10.
 change (deserialize 0 ("222" :: s1 :: s2 :: bs)) with
   (let (zs, ws) := split_at (2 * nat_of_ascii16 (s1, s2)) @@ deserialize 0 bs in
   Map16 (pair zs) :: ws).
-unfold atat.
 rewrite H10, H14, nat_ascii16_embedding, <- H11...
 Qed.
 
@@ -573,7 +572,6 @@ apply H in H11.
 change (deserialize 0 ("223" :: s1 :: s2 :: s3 :: s4 :: bs)) with
   (let (zs, ws) := split_at (2 * nat_of_ascii32 ((s1, s2),(s3,s4))) @@ deserialize 0 bs in
     Map32 (pair zs) :: ws).
-unfold atat.
 rewrite H16, H11, nat_ascii32_embedding, <- H13...
 Qed.
 
