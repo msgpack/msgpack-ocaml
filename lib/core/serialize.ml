@@ -23,7 +23,6 @@ let deserialize_string str =
 let serialize_string obj =
   obj
   +> Pack.pack
-  +> MsgpackCore.serialize
+  +> (fun objs -> MsgpackCore.serialize_rev objs [])
   +> List.rev_map Pack.char_of_ascii8
-  +> List.rev
   +> implode

@@ -22,19 +22,6 @@ Proof.
   reflexivity.
 Qed.
 
-Definition app_tailrec {A} (xs ys: list A) :=
-  rev_tailrec (rev_append ys (rev_tailrec xs)).
-
-Lemma app_tailrec_equiv: forall A (xs ys: list A),
-  app_tailrec xs ys = app xs ys.
-Proof.
-  intros.
-  unfold app_tailrec.
-  rewrite !rev_tailrec_equiv, rev_append_rev.
-  rewrite <-distr_rev, rev_involutive.
-  reflexivity.
-Qed.
-
 Definition flat_map_tailrec {A B} (f: A -> list B) (xs: list A) :=
   rev_tailrec (fold_left (fun acc x => rev_append (f x) acc) xs []).
 
@@ -65,6 +52,16 @@ Proof.
     rewrite <-rev_app_distr.
     rewrite <-Hlemma.
     reflexivity.
+Qed.
+
+Lemma rev_append_app_left: forall A (xs ys zs: list A),
+  rev_append (ys ++ xs) zs = rev_append xs (rev_append ys zs).
+Proof.
+  intros.
+  rewrite !rev_append_rev.
+  rewrite rev_app_distr.
+  rewrite app_assoc.
+  reflexivity.
 Qed.
 
 Lemma app_same : forall A (xs ys zs : list A),
@@ -320,4 +317,26 @@ replace (2 * (length ((x1,x2) :: xs))) with (length (unpair ((x1,x2)::xs))).
  simpl.
  rewrite unpair_length.
  omega.
+Qed.
+
+(* Class of functions that prepend something to their argument. These
+ * will typically be tail-recursive functions that maintain an
+ * accumulator. *)
+Definition Prepending {A} (f: list A -> list A) := forall ys zs,
+  f (ys ++ zs) = f ys ++ zs.
+
+Lemma Prepending_nil: forall {A} f, Prepending f -> forall (zs: list A),
+  f zs = f [] ++ zs.
+Proof.
+  unfold Prepending. intros * H *. apply (H [] zs).
+Qed.
+
+Lemma Prepending_rev_append: forall A (xs: list A),
+  Prepending (rev_append xs).
+Proof.
+unfold Prepending.
+intros.
+rewrite !rev_append_rev.
+rewrite app_assoc.
+reflexivity.
 Qed.

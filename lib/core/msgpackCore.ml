@@ -2149,11 +2149,6 @@ let length_tailrec xs =
 let rev_tailrec xs =
   rev' xs
 
-(** val app_tailrec : 'a1 list -> 'a1 list -> 'a1 list **)
-
-let app_tailrec xs ys =
-  rev_tailrec (rev_append ys (rev_tailrec xs))
-
 (** val flat_map_tailrec : ('a1 -> 'a2 list) -> 'a1 list -> 'a2 list **)
 
 let flat_map_tailrec f xs =
@@ -2321,105 +2316,120 @@ type object0 =
 | Map16 of (object0 * object0) list
 | Map32 of (object0 * object0) list
 
-(** val serialize : object0 -> ascii8 list **)
+(** val serialize_rev_list :
+    (object0 -> ascii8 list -> ascii8 list) -> object0 list -> ascii8 list ->
+    ascii8 list **)
 
-let rec serialize = function
-| Bool b ->
-  if b
-  then (Ascii (true, true, false, false, false, false, true, true))::[]
-  else (Ascii (false, true, false, false, false, false, true, true))::[]
-| Nil -> (Ascii (false, false, false, false, false, false, true, true))::[]
-| PFixnum a ->
-  let Ascii (b1, b2, b3, b4, b5, b6, b7, b) = a in
-  (Ascii (b1, b2, b3, b4, b5, b6, b7, false))::[]
-| NFixnum a ->
-  let Ascii (b1, b2, b3, b4, b5, b, b0, b6) = a in
-  (Ascii (b1, b2, b3, b4, b5, true, true, true))::[]
-| Uint8 c ->
-  (Ascii (false, false, true, true, false, false, true,
-    true))::(list_of_ascii8 c)
-| Uint16 c ->
-  (Ascii (true, false, true, true, false, false, true,
-    true))::(list_of_ascii16 c)
-| Uint32 c ->
-  (Ascii (false, true, true, true, false, false, true,
-    true))::(list_of_ascii32 c)
-| Uint64 c ->
-  (Ascii (true, true, true, true, false, false, true,
-    true))::(list_of_ascii64 c)
-| Int8 c ->
-  (Ascii (false, false, false, false, true, false, true,
-    true))::(list_of_ascii8 c)
-| Int16 c ->
-  (Ascii (true, false, false, false, true, false, true,
-    true))::(list_of_ascii16 c)
-| Int32 c ->
-  (Ascii (false, true, false, false, true, false, true,
-    true))::(list_of_ascii32 c)
-| Int64 c ->
-  (Ascii (true, true, false, false, true, false, true,
-    true))::(list_of_ascii64 c)
-| Float c ->
-  (Ascii (false, true, false, true, false, false, true,
-    true))::(list_of_ascii32 c)
-| Double c ->
-  (Ascii (true, true, false, true, false, false, true,
-    true))::(list_of_ascii64 c)
-| FixRaw xs ->
-  let Ascii (b1, b2, b3, b4, b5, b, b0, b6) =
-    ascii8_of_nat (length_tailrec xs)
-  in
-  (Ascii (b1, b2, b3, b4, b5, true, false, true))::xs
-| Raw16 xs ->
-  let (s1, s2) = ascii16_of_nat (length_tailrec xs) in
-  (Ascii (false, true, false, true, true, false, true, true))::(s1::(s2::xs))
-| Raw32 xs ->
-  let (p, p0) = ascii32_of_nat (length_tailrec xs) in
-  let (s1, s2) = p in
-  let (s3, s4) = p0 in
-  (Ascii (true, true, false, true, true, false, true,
-  true))::(s1::(s2::(s3::(s4::xs))))
-| FixArray xs ->
-  let ys = flat_map_tailrec serialize xs in
-  let Ascii (b1, b2, b3, b4, b, b0, b5, b6) =
-    ascii8_of_nat (length_tailrec xs)
-  in
-  (Ascii (b1, b2, b3, b4, true, false, false, true))::ys
-| Array16 xs ->
-  let ys = flat_map_tailrec serialize xs in
-  let (s1, s2) = ascii16_of_nat (length_tailrec xs) in
-  (Ascii (false, false, true, true, true, false, true, true))::(s1::(s2::ys))
-| Array32 xs ->
-  let ys = flat_map_tailrec serialize xs in
-  let (p, p0) = ascii32_of_nat (length_tailrec xs) in
-  let (s1, s2) = p in
-  let (s3, s4) = p0 in
-  (Ascii (true, false, true, true, true, false, true,
-  true))::(s1::(s2::(s3::(s4::ys))))
-| FixMap xs ->
-  let ys =
-    flat_map_tailrec (fun p ->
-      app_tailrec (serialize (fst p)) (serialize (snd p))) xs
-  in
-  let Ascii (b1, b2, b3, b4, b, b0, b5, b6) =
-    ascii8_of_nat (length_tailrec xs)
-  in
-  (Ascii (b1, b2, b3, b4, false, false, false, true))::ys
-| Map16 xs ->
-  let ys =
-    flat_map_tailrec (fun p ->
-      app_tailrec (serialize (fst p)) (serialize (snd p))) xs
-  in
-  let (s1, s2) = ascii16_of_nat (length_tailrec xs) in
-  (Ascii (false, true, true, true, true, false, true, true))::(s1::(s2::ys))
-| Map32 xs ->
-  let ys =
-    flat_map_tailrec (fun p ->
-      app_tailrec (serialize (fst p)) (serialize (snd p))) xs
-  in
-  let s = ascii32_of_nat (length_tailrec xs) in
-  (Ascii (true, true, true, true, true, false, true,
-  true))::((fst (fst s))::((snd (fst s))::((fst (snd s))::((snd (snd s))::ys))))
+let rec serialize_rev_list serialize_rev0 os acc =
+  match os with
+  | [] -> acc
+  | o::os0 -> serialize_rev_list serialize_rev0 os0 (serialize_rev0 o acc)
+
+(** val serialize_rev_kvs :
+    (object0 -> ascii8 list -> ascii8 list) -> (object0 * object0) list ->
+    ascii8 list -> ascii8 list **)
+
+let rec serialize_rev_kvs serialize_rev0 ps acc =
+  match ps with
+  | [] -> acc
+  | y::ps0 ->
+    let (k, v) = y in
+    serialize_rev_kvs serialize_rev0 ps0
+      (serialize_rev0 v (serialize_rev0 k acc))
+
+(** val serialize_rev : object0 -> ascii list -> ascii8 list **)
+
+let rec serialize_rev obj acc =
+  match obj with
+  | Bool b ->
+    if b
+    then (Ascii (true, true, false, false, false, false, true, true))::acc
+    else (Ascii (false, true, false, false, false, false, true, true))::acc
+  | Nil ->
+    (Ascii (false, false, false, false, false, false, true, true))::acc
+  | PFixnum a ->
+    let Ascii (b1, b2, b3, b4, b5, b6, b7, b) = a in
+    (Ascii (b1, b2, b3, b4, b5, b6, b7, false))::acc
+  | NFixnum a ->
+    let Ascii (b1, b2, b3, b4, b5, b, b0, b6) = a in
+    (Ascii (b1, b2, b3, b4, b5, true, true, true))::acc
+  | Uint8 c ->
+    rev_append (list_of_ascii8 c) ((Ascii (false, false, true, true, false,
+      false, true, true))::acc)
+  | Uint16 c ->
+    rev_append (list_of_ascii16 c) ((Ascii (true, false, true, true, false,
+      false, true, true))::acc)
+  | Uint32 c ->
+    rev_append (list_of_ascii32 c) ((Ascii (false, true, true, true, false,
+      false, true, true))::acc)
+  | Uint64 c ->
+    rev_append (list_of_ascii64 c) ((Ascii (true, true, true, true, false,
+      false, true, true))::acc)
+  | Int8 c ->
+    rev_append (list_of_ascii8 c) ((Ascii (false, false, false, false, true,
+      false, true, true))::acc)
+  | Int16 c ->
+    rev_append (list_of_ascii16 c) ((Ascii (true, false, false, false, true,
+      false, true, true))::acc)
+  | Int32 c ->
+    rev_append (list_of_ascii32 c) ((Ascii (false, true, false, false, true,
+      false, true, true))::acc)
+  | Int64 c ->
+    rev_append (list_of_ascii64 c) ((Ascii (true, true, false, false, true,
+      false, true, true))::acc)
+  | Float c ->
+    rev_append (list_of_ascii32 c) ((Ascii (false, true, false, true, false,
+      false, true, true))::acc)
+  | Double c ->
+    rev_append (list_of_ascii64 c) ((Ascii (true, true, false, true, false,
+      false, true, true))::acc)
+  | FixRaw xs ->
+    let Ascii (b1, b2, b3, b4, b5, b, b0, b6) =
+      ascii8_of_nat (length_tailrec xs)
+    in
+    rev_append xs ((Ascii (b1, b2, b3, b4, b5, true, false, true))::acc)
+  | Raw16 xs ->
+    let (s1, s2) = ascii16_of_nat (length_tailrec xs) in
+    rev_append xs (s2::(s1::((Ascii (false, true, false, true, true, false,
+      true, true))::acc)))
+  | Raw32 xs ->
+    let (p, p0) = ascii32_of_nat (length_tailrec xs) in
+    let (s1, s2) = p in
+    let (s3, s4) = p0 in
+    rev_append xs (s4::(s3::(s2::(s1::((Ascii (true, true, false, true, true,
+      false, true, true))::acc)))))
+  | FixArray xs ->
+    let Ascii (b1, b2, b3, b4, b, b0, b5, b6) =
+      ascii8_of_nat (length_tailrec xs)
+    in
+    serialize_rev_list serialize_rev xs ((Ascii (b1, b2, b3, b4, true, false,
+      false, true))::acc)
+  | Array16 xs ->
+    let (s1, s2) = ascii16_of_nat (length_tailrec xs) in
+    serialize_rev_list serialize_rev xs (s2::(s1::((Ascii (false, false,
+      true, true, true, false, true, true))::acc)))
+  | Array32 xs ->
+    let (p, p0) = ascii32_of_nat (length_tailrec xs) in
+    let (s1, s2) = p in
+    let (s3, s4) = p0 in
+    serialize_rev_list serialize_rev xs (s4::(s3::(s2::(s1::((Ascii (true,
+      false, true, true, true, false, true, true))::acc)))))
+  | FixMap xs ->
+    let Ascii (b1, b2, b3, b4, b, b0, b5, b6) =
+      ascii8_of_nat (length_tailrec xs)
+    in
+    serialize_rev_kvs serialize_rev xs ((Ascii (b1, b2, b3, b4, false, false,
+      false, true))::acc)
+  | Map16 xs ->
+    let (s1, s2) = ascii16_of_nat (length_tailrec xs) in
+    serialize_rev_kvs serialize_rev xs (s2::(s1::((Ascii (false, true, true,
+      true, true, false, true, true))::acc)))
+  | Map32 xs ->
+    let (p, p0) = ascii32_of_nat (length_tailrec xs) in
+    let (s1, s2) = p in
+    let (s3, s4) = p0 in
+    serialize_rev_kvs serialize_rev xs (s4::(s3::(s2::(s1::((Ascii (true,
+      true, true, true, true, false, true, true))::acc)))))
 
 (** val compact : object0 list -> ascii8 list **)
 

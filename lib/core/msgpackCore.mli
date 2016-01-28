@@ -601,8 +601,6 @@ val length_tailrec : 'a1 list -> int
 
 val rev_tailrec : 'a1 list -> 'a1 list
 
-val app_tailrec : 'a1 list -> 'a1 list -> 'a1 list
-
 val flat_map_tailrec : ('a1 -> 'a2 list) -> 'a1 list -> 'a2 list
 
 val take : int -> 'a1 list -> 'a1 list
@@ -670,7 +668,15 @@ type object0 =
 | Map16 of (object0 * object0) list
 | Map32 of (object0 * object0) list
 
-val serialize : object0 -> ascii8 list
+val serialize_rev_list :
+  (object0 -> ascii8 list -> ascii8 list) -> object0 list -> ascii8 list ->
+  ascii8 list
+
+val serialize_rev_kvs :
+  (object0 -> ascii8 list -> ascii8 list) -> (object0 * object0) list ->
+  ascii8 list -> ascii8 list
+
+val serialize_rev : object0 -> ascii list -> ascii8 list
 
 val compact : object0 list -> ascii8 list
 
