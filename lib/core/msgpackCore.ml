@@ -2149,10 +2149,10 @@ let length_tailrec xs =
 let rev_tailrec xs =
   rev' xs
 
-(** val flat_map_tailrec : ('a1 -> 'a2 list) -> 'a1 list -> 'a2 list **)
+(** val map_tailrec : ('a1 -> 'a2) -> 'a1 list -> 'a2 list **)
 
-let flat_map_tailrec f xs =
-  rev_tailrec (fold_left (fun acc x -> rev_append (f x) acc) xs [])
+let map_tailrec f xs =
+  rev_tailrec (fold_left (fun acc x -> (f x)::acc) xs [])
 
 (** val take : int -> 'a1 list -> 'a1 list **)
 
@@ -2434,10 +2434,17 @@ let rec serialize_rev obj acc =
 (** val compact : object0 list -> ascii8 list **)
 
 let compact xs =
-  flat_map_tailrec (fun x ->
+  map_tailrec (fun x ->
     match x with
-    | FixRaw xs0 -> xs0
-    | _ -> []) xs
+    | FixRaw l ->
+      (match l with
+       | [] -> Ascii (false, false, false, false, true, true, false, false)
+       | x0::l0 ->
+         (match l0 with
+          | [] -> x0
+          | a::l1 ->
+            Ascii (false, false, false, false, true, true, false, false)))
+    | _ -> Ascii (false, false, false, false, true, true, false, false)) xs
 
 (** val deserialize : int -> ascii8 list -> object0 list **)
 

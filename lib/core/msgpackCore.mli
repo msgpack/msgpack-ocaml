@@ -601,7 +601,7 @@ val length_tailrec : 'a1 list -> int
 
 val rev_tailrec : 'a1 list -> 'a1 list
 
-val flat_map_tailrec : ('a1 -> 'a2 list) -> 'a1 list -> 'a2 list
+val map_tailrec : ('a1 -> 'a2) -> 'a1 list -> 'a2 list
 
 val take : int -> 'a1 list -> 'a1 list
 

@@ -22,36 +22,31 @@ Proof.
   reflexivity.
 Qed.
 
-Definition flat_map_tailrec {A B} (f: A -> list B) (xs: list A) :=
-  rev_tailrec (fold_left (fun acc x => rev_append (f x) acc) xs []).
+Definition map_tailrec {A B} (f: A -> B) (xs: list A) :=
+  rev_tailrec (fold_left (fun acc x => f x :: acc) xs []).
 
-Lemma flat_map_tailrec_equiv: forall A B (f: A -> list B) (xs: list A),
-  flat_map_tailrec f xs = flat_map f xs.
+Lemma map_tailrec_equiv: forall A B (f: A -> B) (xs: list A),
+  map_tailrec f xs = map f xs.
 Proof.
   intros.
-  unfold flat_map_tailrec.
+  unfold map_tailrec.
   rewrite rev_tailrec_equiv.
-  set (body := fun acc x => rev_append (f x) acc).
+  set (body := fun acc x => f x :: acc).
   assert (Hlemma: forall xs ys zs, fold_left body xs (ys ++ zs) = fold_left body xs ys ++ zs).
   { clear.
     intros xs.
-    induction xs; simpl.
-    - reflexivity.
-    - intros.
-      rewrite <-IHxs.
-      f_equal.
-      unfold body; simpl.
-      rewrite !rev_append_rev, app_assoc.
-      reflexivity.
-  }
-  induction xs; simpl.
-  - reflexivity.
-  - rewrite <-IHxs.
-    rewrite <-(rev_involutive (f a)).
-    rewrite (rev_alt (f a)).
-    rewrite <-rev_app_distr.
-    rewrite <-Hlemma.
+    induction xs; [reflexivity|].
+    intros.
+    simpl.
+    rewrite <-IHxs.
     reflexivity.
+  }
+  induction xs; [reflexivity|].
+  simpl.
+  rewrite <-IHxs.
+  rewrite <-rev_unit.
+  rewrite <-Hlemma.
+  reflexivity.
 Qed.
 
 Lemma rev_append_app_left: forall A (xs ys zs: list A),
