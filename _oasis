@@ -3,7 +3,7 @@
 # ------------------------------------------------------------
 OASISFormat: 0.3
 Name:        msgpack
-Version:     1.2.0
+Version:     1.2.1
 Authors:     MIZUNO Hiroki
 License:     MIT
 Plugins:     META (0.3), DevFiles (0.3)
