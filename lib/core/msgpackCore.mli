@@ -6,8 +6,6 @@ val fst : ('a1 * 'a2) -> 'a1
 
 val snd : ('a1 * 'a2) -> 'a2
 
-val length : 'a1 list -> int
-
 val app : 'a1 list -> 'a1 list -> 'a1 list
 
 type comparison =
@@ -570,7 +568,11 @@ module N :
   val min_dec : n -> n -> bool
  end
 
-val flat_map : ('a1 -> 'a2 list) -> 'a1 list -> 'a2 list
+val rev_append : 'a1 list -> 'a1 list -> 'a1 list
+
+val rev' : 'a1 list -> 'a1 list
+
+val fold_left : ('a1 -> 'a2 -> 'a1) -> 'a2 list -> 'a1 -> 'a1
 
 val eucl_dev : int -> int -> (int * int)
 
@@ -594,6 +596,12 @@ val n_of_digits : bool list -> n
 val n_of_ascii : ascii -> n
 
 val nat_of_ascii : ascii -> int
+
+val length_tailrec : 'a1 list -> int
+
+val rev_tailrec : 'a1 list -> 'a1 list
+
+val map_tailrec : ('a1 -> 'a2) -> 'a1 list -> 'a2 list
 
 val take : int -> 'a1 list -> 'a1 list
 
@@ -660,9 +668,15 @@ type object0 =
 | Map16 of (object0 * object0) list
 | Map32 of (object0 * object0) list
 
-val atat : ('a1 -> 'a2) -> 'a1 -> 'a2
+val serialize_rev_list :
+  (object0 -> ascii8 list -> ascii8 list) -> object0 list -> ascii8 list ->
+  ascii8 list
 
-val serialize : object0 -> ascii8 list
+val serialize_rev_kvs :
+  (object0 -> ascii8 list -> ascii8 list) -> (object0 * object0) list ->
+  ascii8 list -> ascii8 list
+
+val serialize_rev : object0 -> ascii list -> ascii8 list
 
 val compact : object0 list -> ascii8 list
 

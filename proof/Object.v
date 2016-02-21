@@ -120,3 +120,74 @@ intros.
 apply ascii16_of_nat_eq in H1; auto.
 Qed.
 
+(* Better induction principle for object. Pattern copied from
+   http://adam.chlipala.net/cpdt/html/InductiveTypes.html *)
+Section ObjectInd'.
+  Variable P: object -> Prop.
+
+  Let P_both p := P (fst p) /\ P (snd p).
+
+  Hypothesis PBool: forall x, P (Bool x).
+  Hypothesis PNil: P Nil.
+  Hypothesis PPFixnum: forall x, P (PFixnum x).
+  Hypothesis PNFixnum: forall x, P (NFixnum x).
+  Hypothesis PUint8  : forall x, P (Uint8 x).
+  Hypothesis PUint16 : forall x, P (Uint16 x).
+  Hypothesis PUint32 : forall x, P (Uint32 x).
+  Hypothesis PUint64 : forall x, P (Uint64 x).
+  Hypothesis PInt8   : forall x, P (Int8 x).
+  Hypothesis PInt16  : forall x, P (Int16 x).
+  Hypothesis PInt32  : forall x, P (Int32 x).
+  Hypothesis PInt64  : forall x, P (Int64 x).
+  Hypothesis PFloat  : forall x, P (Float x).
+  Hypothesis PDouble : forall x, P (Double x).
+  Hypothesis PFixRaw : forall x, P (FixRaw x).
+  Hypothesis PRaw16  : forall x, P (Raw16 x).
+  Hypothesis PRaw32  : forall x, P (Raw32 x).
+
+  Hypothesis PFixArray: forall os, Forall P os -> P (FixArray os).
+  Hypothesis PArray16: forall os, Forall P os -> P (Array16 os).
+  Hypothesis PArray32: forall os, Forall P os -> P (Array32 os).
+  Hypothesis PFixMap: forall ps, Forall P_both ps -> P (FixMap ps).
+  Hypothesis PMap16: forall ps, Forall P_both ps -> P (Map16 ps).
+  Hypothesis PMap32: forall ps, Forall P_both ps -> P (Map32 ps).
+
+  Let P_all object_ind' := fix F os :=
+    match os return Forall P os with
+    | [] => Forall_nil P
+    | o :: os => Forall_cons o (object_ind' o) (F os)
+    end.
+
+  Let P_all_pairs object_ind' := fix F ps :=
+    match ps return Forall P_both ps with
+    | [] => Forall_nil P_both
+    | (k,v) :: ps => Forall_cons (k,v) (@conj (P k) (P v) (object_ind' k) (object_ind' v)) (F ps)
+    end.
+
+  Fixpoint object_ind' o: P o :=
+    match o return P o with
+    | Nil => PNil
+    | Bool    x => PBool x
+    | PFixnum x => PPFixnum x
+    | NFixnum x => PNFixnum x
+    | Uint8   x => PUint8 x
+    | Uint16  x => PUint16 x
+    | Uint32  x => PUint32 x
+    | Uint64  x => PUint64 x
+    | Int8    x => PInt8 x
+    | Int16   x => PInt16 x
+    | Int32   x => PInt32 x
+    | Int64   x => PInt64 x
+    | Float   x => PFloat x
+    | Double  x => PDouble x
+    | FixRaw  x => PFixRaw x
+    | Raw16   x => PRaw16 x
+    | Raw32   x => PRaw32 x
+    | FixArray os => PFixArray os (P_all object_ind' os)
+    | Array16 os => PArray16 os (P_all object_ind' os)
+    | Array32 os => PArray32 os (P_all object_ind' os)
+    | FixMap ps => PFixMap ps (P_all_pairs object_ind' ps)
+    | Map16 ps => PMap16 ps (P_all_pairs object_ind' ps)
+    | Map32 ps => PMap32 ps (P_all_pairs object_ind' ps)
+    end.
+End ObjectInd'.

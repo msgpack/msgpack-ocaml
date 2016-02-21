@@ -3,93 +3,86 @@ Require Import ListUtil Object MultiByte Util SerializeSpec ProofUtil.
 
 Open Scope char_scope.
 
-Fixpoint serialize (obj : object) : list ascii8 :=
+Definition serialize_rev_list (serialize_rev: object -> list ascii8 -> list ascii8) :=
+  fix F os acc :=
+    match os with
+    | [] => acc
+    | o :: os => F os (serialize_rev o acc)
+    end.
+
+Definition serialize_rev_kvs (serialize_rev: object -> list ascii8 -> list ascii8) :=
+  fix F ps acc :=
+    match ps with
+    | [] => acc
+    | (k,v) :: ps => F ps (serialize_rev v (serialize_rev k acc))
+    end.
+
+Fixpoint serialize_rev (obj : object) acc : list ascii8 :=
   match obj with
-    | Nil        => [ "192" ]
-    | Bool false => [ "194" ]
-    | Bool true  => [ "195" ]
+    | Nil        => "192" :: acc
+    | Bool false => "194" :: acc
+    | Bool true  => "195" :: acc
     | PFixnum (Ascii b1 b2 b3 b4 b5 b6 b7 _) =>
-      [ Ascii b1 b2 b3 b4 b5 b6 b7 false ]
+      (Ascii b1 b2 b3 b4 b5 b6 b7 false) :: acc
     | NFixnum (Ascii b1 b2 b3 b4 b5 _ _ _) =>
-      [ Ascii b1 b2 b3 b4 b5 true true true ]
-    | Uint8  c => "204"::list_of_ascii8 c
-    | Uint16 c => "205"::list_of_ascii16 c
-    | Uint32 c => "206"::list_of_ascii32 c
-    | Uint64 c => "207"::list_of_ascii64 c
-    | Int8   c => "208"::list_of_ascii8 c
-    | Int16  c => "209"::list_of_ascii16 c
-    | Int32  c => "210"::list_of_ascii32 c
-    | Int64  c => "211"::list_of_ascii64 c
-    | Float  c => "202"::list_of_ascii32 c
-    | Double c => "203"::list_of_ascii64 c
+      (Ascii b1 b2 b3 b4 b5 true true true) :: acc
+    | Uint8  c => rev_append (list_of_ascii8  c) ("204":: acc)
+    | Uint16 c => rev_append (list_of_ascii16 c) ("205" :: acc)
+    | Uint32 c => rev_append (list_of_ascii32 c) ("206" :: acc)
+    | Uint64 c => rev_append (list_of_ascii64 c) ("207" :: acc)
+    | Int8   c => rev_append (list_of_ascii8  c) ("208" :: acc)
+    | Int16  c => rev_append (list_of_ascii16 c) ("209" :: acc)
+    | Int32  c => rev_append (list_of_ascii32 c) ("210" :: acc)
+    | Int64  c => rev_append (list_of_ascii64 c) ("211" :: acc)
+    | Float  c => rev_append (list_of_ascii32 c) ("202" :: acc)
+    | Double c => rev_append (list_of_ascii64 c) ("203" :: acc)
     | FixRaw xs =>
-      match ascii8_of_nat @@ length xs with
+      match ascii8_of_nat @@ length_tailrec xs with
         | Ascii b1 b2 b3 b4 b5 _ _ _ =>
-          (Ascii b1 b2 b3 b4 b5 true false true)::xs
+          rev_append xs ((Ascii b1 b2 b3 b4 b5 true false true) :: acc)
       end
     | Raw16 xs =>
-      let (s1,s2) :=
-        ascii16_of_nat @@ length xs
-      in
-        "218"::s1::s2::xs
+      let (s1,s2) := ascii16_of_nat @@ length_tailrec xs in
+      rev_append xs (s2 :: s1 :: "218" :: acc)
     | Raw32 xs =>
-      match ascii32_of_nat @@ length xs with
+      match ascii32_of_nat @@ length_tailrec xs with
         | ((s1,s2),(s3,s4)) =>
-          "219"::s1::s2::s3::s4::xs
+          rev_append xs (s4 :: s3 :: s2 :: s1 :: "219" :: acc)
       end
     | FixArray xs =>
-      let ys :=
-        flat_map serialize xs
-      in
-      match ascii8_of_nat @@ length xs with
+      match ascii8_of_nat @@ length_tailrec xs with
         | Ascii b1 b2 b3 b4 _ _ _ _ =>
-          (Ascii b1 b2 b3 b4 true false false true)::ys
+          serialize_rev_list serialize_rev xs
+            ((Ascii b1 b2 b3 b4 true false false true) :: acc)
       end
     | Array16 xs =>
-      let ys :=
-        flat_map serialize xs
-      in
-      let (s1, s2) :=
-        ascii16_of_nat (length  xs)
-      in
-        "220"::s1::s2::ys
+      let (s1, s2) := ascii16_of_nat @@ length_tailrec xs in
+      serialize_rev_list serialize_rev xs (s2 :: s1 :: "220" :: acc)
     | Array32 xs =>
-      let ys :=
-        flat_map serialize xs
-      in
-      match ascii32_of_nat @@ length xs with
+      match ascii32_of_nat @@ length_tailrec xs with
         | ((s1,s2),(s3,s4)) =>
-         "221"::s1::s2::s3::s4::ys
+          serialize_rev_list serialize_rev xs (s4 :: s3 :: s2 :: s1 :: "221" :: acc)
       end
     | FixMap xs =>
-      let ys :=
-        flat_map (fun p => serialize (fst p) ++ serialize (snd p)) xs
-      in
-      match ascii8_of_nat @@ length xs with
+      match ascii8_of_nat @@ length_tailrec xs with
         | Ascii b1 b2 b3 b4 _ _ _ _ =>
-          (Ascii b1 b2 b3 b4 false false false true)::ys
+          serialize_rev_kvs serialize_rev xs
+            ((Ascii b1 b2 b3 b4 false false false true) :: acc)
       end
     | Map16 xs =>
-      let ys :=
-        flat_map (fun p => serialize (fst p) ++ serialize (snd p)) xs
-      in
-      let (s1, s2) :=
-        ascii16_of_nat (length  xs)
-      in
-        "222"::s1::s2::ys
+      let (s1, s2) := ascii16_of_nat @@ length_tailrec xs in
+      serialize_rev_kvs serialize_rev xs (s2 :: s1 :: "222" :: acc)
     | Map32 xs =>
-      let ys :=
-        flat_map (fun p => serialize (fst p) ++ serialize (snd p)) xs
-      in
-      let s :=
-        ascii32_of_nat @@ length xs
-      in
-        "223"::(fst (fst s))::(snd (fst s))::(fst (snd s))::(snd (snd s))::ys
+      match ascii32_of_nat @@ length_tailrec xs with
+        | ((s1,s2),(s3,s4)) =>
+          serialize_rev_kvs serialize_rev xs (s4 :: s3 :: s2 :: s1 :: "223" :: acc)
+      end
   end.
 
 Definition Correct obj xs :=
+  forall acc,
   Serialized obj xs ->
-  serialize obj = xs.
+  serialize_rev obj acc = rev_append xs acc.
 
 Ltac straitfoward :=
   unfold Correct;
@@ -197,7 +190,7 @@ unfold Correct.
 intros.
 inversion H0.
 simpl.
-unfold atat.
+rewrite length_tailrec_equiv.
 rewrite_for (ascii8_of_nat (length cs)).
 reflexivity.
 Qed.
@@ -210,7 +203,7 @@ unfold Correct.
 intros.
 inversion H0.
 simpl.
-unfold atat.
+rewrite length_tailrec_equiv.
 rewrite_for (ascii16_of_nat (length cs)).
 reflexivity.
 Qed.
@@ -223,18 +216,18 @@ unfold Correct.
 intros.
 inversion H0.
 simpl.
-unfold atat.
+rewrite length_tailrec_equiv.
 rewrite_for (ascii32_of_nat (length cs)).
 reflexivity.
 Qed.
 
-Lemma correct_fixarray_nil :
+Lemma correct_fixarray_nil:
   Correct (FixArray []) ["144"].
 Proof.
 straitfoward.
 Qed.
 
-Lemma correct_array16_nil :
+Lemma correct_array16_nil:
   Correct (Array16 []) ["220"; "000"; "000"].
 Proof.
 unfold Correct.
@@ -250,7 +243,6 @@ Proof.
 unfold Correct.
 intros.
 simpl.
-unfold atat.
 rewrite <- ascii8_of_nat_O.
 reflexivity.
 Qed.
@@ -277,10 +269,104 @@ Proof.
 unfold Correct.
 intros.
 simpl.
-unfold atat.
 rewrite <- ascii8_of_nat_O.
 reflexivity.
 Qed.
+
+Lemma Prepending_serialize_rev_list': forall f os, (Forall (fun o => Prepending (f o))) os ->
+  Prepending (serialize_rev_list f os).
+Proof.
+  unfold Prepending. intros * H.
+  induction H; [reflexivity|].
+  intros ys zs. simpl. rewrite H. apply IHForall.
+Qed.
+
+Lemma Prepending_serialize_rev_kvs': forall f ps,
+  (Forall (fun p => Prepending (f (fst p)) /\ Prepending (f (snd p)))) ps ->
+  Prepending (serialize_rev_kvs f ps).
+Proof.
+  unfold Prepending. intros * H.
+  induction H as [|[x1 x2] ? [H1 H2]]; [reflexivity|].
+  intros ys zs. simpl. rewrite H1, H2. apply IHForall.
+Qed.
+
+Lemma Prepending_serialize_rev: forall o,
+  Prepending (serialize_rev o).
+Proof.
+unfold Prepending.
+intros.
+generalize ys zs; clear ys zs.
+induction o using object_ind'; intros ys zs; simpl.
+- destruct x; reflexivity.
+- reflexivity.
+- destruct x. reflexivity.
+- destruct x. reflexivity.
+- reflexivity.
+- rewrite <-Prepending_rev_append. reflexivity.
+- rewrite <-Prepending_rev_append. reflexivity.
+- rewrite <-Prepending_rev_append. reflexivity.
+- reflexivity.
+- rewrite <-Prepending_rev_append. reflexivity.
+- rewrite <-Prepending_rev_append. reflexivity.
+- rewrite <-Prepending_rev_append. reflexivity.
+- rewrite <-Prepending_rev_append. reflexivity.
+- rewrite <-Prepending_rev_append. reflexivity.
+- destruct (ascii8_of_nat (length_tailrec x)). rewrite <-Prepending_rev_append. reflexivity.
+- destruct (ascii16_of_nat (length_tailrec x)). rewrite <-Prepending_rev_append. reflexivity.
+- destruct (ascii32_of_nat (length_tailrec x)) as [[? ?] [? ?]].
+  rewrite <-Prepending_rev_append. reflexivity.
+- destruct (ascii8_of_nat (length_tailrec os)) as [b1 b2 b3 b4 b5 b6 b7 b8].
+  rewrite app_comm_cons.
+  generalize ((Ascii b1 b2 b3 b4 true false false true :: ys)); intros.
+  apply (Prepending_serialize_rev_list' serialize_rev).
+  apply H.
+- destruct (ascii16_of_nat (length_tailrec os)) as [s1 s2].
+  rewrite !app_comm_cons.
+  generalize ((s2 :: s1 :: "220" :: ys)); intros.
+  apply (Prepending_serialize_rev_list' serialize_rev).
+  apply H.
+- destruct (ascii32_of_nat (length_tailrec os)) as [[s1 s2] [s3 s4]].
+  rewrite !app_comm_cons.
+  generalize ((s4 :: s3 :: s2 :: s1 :: "221" :: ys)); intros.
+  apply (Prepending_serialize_rev_list' serialize_rev).
+  apply H.
+- destruct (ascii8_of_nat (length_tailrec ps)) as [b1 b2 b3 b4 b5 b6 b7 b8].
+  rewrite app_comm_cons.
+  generalize ((Ascii b1 b2 b3 b4 false false false true :: ys)); intros.
+  apply (Prepending_serialize_rev_kvs' serialize_rev).
+  apply H.
+- destruct (ascii16_of_nat (length_tailrec ps)) as [s1 s2].
+  rewrite !app_comm_cons.
+  generalize ((s2 :: s1 :: "222" :: ys)); intros.
+  apply (Prepending_serialize_rev_kvs' serialize_rev).
+  apply H.
+- destruct (ascii32_of_nat (length_tailrec ps)) as [[s1 s2] [s3 s4]].
+  rewrite !app_comm_cons.
+  generalize ((s4 :: s3 :: s2 :: s1 :: "223" :: ys)); intros.
+  apply (Prepending_serialize_rev_kvs' serialize_rev).
+  apply H.
+Qed.
+
+Lemma Prepending_serialize_rev_list: forall os,
+  Prepending (serialize_rev_list serialize_rev os).
+Proof.
+  intros.
+  apply Prepending_serialize_rev_list'.
+  apply Forall_forall.
+  intros.
+  apply Prepending_serialize_rev.
+Qed.
+
+Lemma Prepending_serialize_rev_kvs: forall ps,
+  Prepending (serialize_rev_kvs serialize_rev ps).
+Proof.
+  intros.
+  apply Prepending_serialize_rev_kvs'.
+  apply Forall_forall.
+  intros.
+  split; apply Prepending_serialize_rev.
+Qed.
+
 
 Lemma correct_fixarray_cons: forall x xs y ys b1 b2 b3 b4 b5 b6 b7 b8,
   Ascii b1 b2 b3 b4 false false false false = ascii8_of_nat (length xs) ->
@@ -294,13 +380,20 @@ Proof.
 unfold Correct.
 intros.
 simpl in *.
-unfold atat in *.
+rewrite length_tailrec_equiv in *.
+simpl.
 rewrite_for (ascii8_of_nat (S (length xs))).
-apply H2 in H1.
-apply H4 in H3.
+eapply H2 in H1.
+apply (H4 acc) in H3.
 rewrite_for (ascii8_of_nat (length xs)).
-rewrite_for y.
-inversion H3.
+rewrite rev_append_app_left.
+rewrite <-H1.
+rewrite (Prepending_nil _ (Prepending_rev_append _ _)).
+rewrite (Prepending_nil (serialize_rev_list serialize_rev xs)); [|apply Prepending_serialize_rev_list].
+rewrite (Prepending_nil _ (Prepending_rev_append _ _)) in H3.
+rewrite (Prepending_nil (serialize_rev_list serialize_rev xs)) in H3; [|apply Prepending_serialize_rev_list].
+apply app_inv_tail in H3.
+rewrite H3.
 reflexivity.
 Qed.
 
@@ -317,12 +410,20 @@ Proof.
 unfold Correct.
 intros.
 simpl in *.
+rewrite length_tailrec_equiv in *.
+simpl.
 rewrite_for (ascii16_of_nat (S (length xs))).
-apply H2 in H1; auto.
-apply H4 in H3; auto.
+eapply H2 in H1; auto.
+specialize (H4 H3 acc).
 rewrite_for (ascii16_of_nat (length xs)).
-rewrite_for y.
-inversion H3.
+rewrite rev_append_app_left.
+rewrite <-H1.
+rewrite (Prepending_nil _ (Prepending_rev_append _ _)).
+rewrite (Prepending_nil (serialize_rev_list serialize_rev xs)); [|apply Prepending_serialize_rev_list].
+rewrite (Prepending_nil _ (Prepending_rev_append _ _)) in H4.
+rewrite (Prepending_nil (serialize_rev_list serialize_rev xs)) in H4; [|apply Prepending_serialize_rev_list].
+apply app_inv_tail in H4; auto.
+rewrite H4.
 reflexivity.
 Qed.
 
@@ -338,14 +439,21 @@ Proof.
   unfold Correct.
   intros.
   simpl in *.
-  unfold atat in *.
+  rewrite length_tailrec_equiv in *.
+  simpl.
   rewrite_for (ascii32_of_nat (S (length xs))).
-  apply H2 in H1; auto.
-  apply H4 in H3; auto.
-  rewrite_for y.
-  rewrite <- H in H3.
-  inversion H3.
-  auto.
+  eapply H2 in H1; auto.
+  specialize (H4 H3 acc).
+  rewrite_for (ascii32_of_nat (length xs)).
+  rewrite rev_append_app_left.
+  rewrite <-H1.
+  rewrite (Prepending_nil _ (Prepending_rev_append _ _)).
+  rewrite (Prepending_nil (serialize_rev_list serialize_rev xs)); [|apply Prepending_serialize_rev_list].
+  rewrite (Prepending_nil _ (Prepending_rev_append _ _)) in H4.
+  rewrite (Prepending_nil (serialize_rev_list serialize_rev xs)) in H4; [|apply Prepending_serialize_rev_list].
+  apply app_inv_tail in H4; auto.
+  rewrite H4.
+  reflexivity.
 Qed.
 
 Lemma correct_fixmap_cons: forall x1 x2 xs y1 y2 ys b1 b2 b3 b4 b5 b6 b7 b8,
@@ -360,16 +468,21 @@ Proof.
 unfold Correct.
 intros.
 simpl in *.
-unfold atat in *.
+rewrite length_tailrec_equiv in *.
+simpl.
 rewrite_for (ascii8_of_nat (S (length xs))).
-apply H2 in H1.
-apply H4 in H3.
-apply H6 in H5.
+eapply H2 in H1.
+eapply H4 in H3.
+apply (H6 acc) in H5.
 rewrite_for (ascii8_of_nat (length xs)).
-rewrite_for y1.
-rewrite_for y2.
-inversion H5.
-rewrite <- app_assoc.
+do 2 rewrite rev_append_app_left.
+rewrite <-H1, <-H3.
+rewrite (Prepending_nil _ (Prepending_rev_append _ _)).
+rewrite (Prepending_nil (serialize_rev_kvs serialize_rev xs)); [|apply Prepending_serialize_rev_kvs].
+rewrite (Prepending_nil _ (Prepending_rev_append _ _)) in H5.
+rewrite (Prepending_nil (serialize_rev_kvs serialize_rev xs)) in H5; [|apply Prepending_serialize_rev_kvs].
+apply app_inv_tail in H5.
+rewrite H5.
 reflexivity.
 Qed.
 
@@ -387,15 +500,21 @@ Proof.
 unfold Correct.
 intros.
 simpl in *.
+rewrite length_tailrec_equiv in *.
+simpl.
 rewrite_for (ascii16_of_nat (S (length xs))).
-apply H2 in H1.
-apply H4 in H3.
-apply H6 in H5.
+eapply H2 in H1.
+eapply H4 in H3.
+apply (H6 acc) in H5.
 rewrite_for (ascii16_of_nat (length xs)).
-rewrite_for y1.
-rewrite_for y2.
-inversion H5.
-rewrite <- app_assoc.
+do 2 rewrite rev_append_app_left.
+rewrite <-H1, <-H3.
+rewrite (Prepending_nil _ (Prepending_rev_append _ _)).
+rewrite (Prepending_nil (serialize_rev_kvs serialize_rev xs)); [|apply Prepending_serialize_rev_kvs].
+rewrite (Prepending_nil _ (Prepending_rev_append _ _)) in H5.
+rewrite (Prepending_nil (serialize_rev_kvs serialize_rev xs)) in H5; [|apply Prepending_serialize_rev_kvs].
+apply app_inv_tail in H5.
+rewrite H5.
 reflexivity.
 Qed.
 
@@ -410,24 +529,24 @@ Lemma correct_map32_cons : forall x1 x2 xs y1 y2 ys s1 s2 s3 s4 t1 t2 t3 t4,
   Correct (Map32 xs) ("223" :: t1 :: t2 :: t3 :: t4 :: ys) ->
   Correct (Map32 ((x1, x2) :: xs)) ("223" :: s1 :: s2 :: s3 :: s4 :: y1 ++ y2 ++ ys).
 Proof.
-intros.
 unfold Correct.
 intros.
 simpl in *.
-unfold atat in *.
-rewrite_for (ascii32_of_nat (S (length xs))).
-apply H2 in H1.
-apply H4 in H3.
-apply H6 in H5.
+rewrite length_tailrec_equiv in *.
 simpl.
-rewrite_for y1.
-rewrite_for y2.
-rewrite <- app_assoc.
-simpl in H5.
-unfold atat in H5.
-rewrite_for (ascii32_of_nat (length xs)).
-simpl in H5.
-inversion H5.
+rewrite_for (ascii32_of_nat (S (length xs))).
+eapply H2 in H1.
+eapply H4 in H3.
+apply (H6 acc) in H5.
+rewrite <-H in *.
+do 2 rewrite rev_append_app_left.
+rewrite <-H1, <-H3.
+rewrite (Prepending_nil _ (Prepending_rev_append _ _)).
+rewrite (Prepending_nil (serialize_rev_kvs serialize_rev xs)); [|apply Prepending_serialize_rev_kvs].
+rewrite (Prepending_nil _ (Prepending_rev_append _ _)) in H5.
+rewrite (Prepending_nil (serialize_rev_kvs serialize_rev xs)) in H5; [|apply Prepending_serialize_rev_kvs].
+apply app_inv_tail in H5.
+rewrite H5.
 reflexivity.
 Qed.
 
@@ -437,7 +556,7 @@ Lemma correct_intro : forall obj xs,
 Proof.
 unfold Correct.
 intros.
-apply H in H0; auto.
+auto.
 Qed.
 
 Hint Resolve

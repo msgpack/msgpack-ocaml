@@ -3,6 +3,62 @@ Require Import List Omega.
 Notation "[ ]" := nil : list_scope.
 Notation "[ a ; .. ; b ]" := (a :: .. (b :: []) ..) : list_scope.
 
+Definition length_tailrec {A} (xs:list A) :=
+  fold_left (fun x _ => S x) xs 0.
+
+Lemma length_tailrec_equiv: forall A (xs: list A),
+  length_tailrec xs = length xs.
+Proof.
+exact fold_left_length.
+Qed.
+
+Definition rev_tailrec {A} (xs: list A) := List.rev' xs.
+
+Lemma rev_tailrec_equiv: forall A (xs: list A),
+  rev_tailrec xs = rev xs.
+Proof.
+  intros.
+  rewrite rev_alt.
+  reflexivity.
+Qed.
+
+Definition map_tailrec {A B} (f: A -> B) (xs: list A) :=
+  rev_tailrec (fold_left (fun acc x => f x :: acc) xs []).
+
+Lemma map_tailrec_equiv: forall A B (f: A -> B) (xs: list A),
+  map_tailrec f xs = map f xs.
+Proof.
+  intros.
+  unfold map_tailrec.
+  rewrite rev_tailrec_equiv.
+  set (body := fun acc x => f x :: acc).
+  assert (Hlemma: forall xs ys zs, fold_left body xs (ys ++ zs) = fold_left body xs ys ++ zs).
+  { clear.
+    intros xs.
+    induction xs; [reflexivity|].
+    intros.
+    simpl.
+    rewrite <-IHxs.
+    reflexivity.
+  }
+  induction xs; [reflexivity|].
+  simpl.
+  rewrite <-IHxs.
+  rewrite <-rev_unit.
+  rewrite <-Hlemma.
+  reflexivity.
+Qed.
+
+Lemma rev_append_app_left: forall A (xs ys zs: list A),
+  rev_append (ys ++ xs) zs = rev_append xs (rev_append ys zs).
+Proof.
+  intros.
+  rewrite !rev_append_rev.
+  rewrite rev_app_distr.
+  rewrite app_assoc.
+  reflexivity.
+Qed.
+
 Lemma app_same : forall A (xs ys zs : list A),
   xs ++  ys = xs ++ zs -> ys = zs.
 Proof.
@@ -256,4 +312,26 @@ replace (2 * (length ((x1,x2) :: xs))) with (length (unpair ((x1,x2)::xs))).
  simpl.
  rewrite unpair_length.
  omega.
+Qed.
+
+(* Class of functions that prepend something to their argument. These
+ * will typically be tail-recursive functions that maintain an
+ * accumulator. *)
+Definition Prepending {A} (f: list A -> list A) := forall ys zs,
+  f (ys ++ zs) = f ys ++ zs.
+
+Lemma Prepending_nil: forall {A} f, Prepending f -> forall (zs: list A),
+  f zs = f [] ++ zs.
+Proof.
+  unfold Prepending. intros * H *. apply (H [] zs).
+Qed.
+
+Lemma Prepending_rev_append: forall A (xs: list A),
+  Prepending (rev_append xs).
+Proof.
+unfold Prepending.
+intros.
+rewrite !rev_append_rev.
+rewrite app_assoc.
+reflexivity.
 Qed.
