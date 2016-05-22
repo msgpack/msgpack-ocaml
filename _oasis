@@ -13,7 +13,7 @@ Description:
   MessagePack is an efficient binary serialization format.
   If meta_conv is installed, conv module will be installed.
 
-BuildTools: ocamlbuild, camlp4
+BuildTools: ocamlbuild
 
 # ------------------------------------------------------------
 # Flags
@@ -58,7 +58,7 @@ Library msgpack_conv
   # install as msgpack.conv
   FindlibName: conv
   FindlibParent: msgpack
-  BuildDepends: meta_conv, msgpack
+  BuildDepends: ppx_meta_conv, msgpack
 
 # ------------------------------------------------------------
 # Test
@@ -76,7 +76,7 @@ Executable test_conv
   Build$: flag(tests) && (flag(all) || flag(conv))
   Install: false
   MainIs: main.ml
-  BuildDepends: msgpack, msgpack.conv, oUnit, meta_conv.syntax
+  BuildDepends: msgpack, msgpack.conv, oUnit
   CompiledObject: best
 
 Test core
