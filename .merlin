@@ -1,0 +1,6 @@
+PRJ msgpack
+S lib/core
+S lib/conv
+B _build/lib/core
+B _build/lib/conv
+PKG ppx_meta_conv
