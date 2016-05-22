@@ -1,6 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 5d2aae947de84693626266adc894b372)
-version = "1.2.0"
+# DO NOT EDIT (digest: e162a17dcbfd462cd3eac6256c17b12b)
+version = "1.2.1"
 description = "Msgpack library for Objective Caml"
 requires = "num"
 archive(byte) = "msgpack.cma"
@@ -9,9 +9,9 @@ archive(native) = "msgpack.cmxa"
 archive(native, plugin) = "msgpack.cmxs"
 exists_if = "msgpack.cma"
 package "conv" (
- version = "1.2.0"
+ version = "1.2.1"
  description = "Msgpack library for Objective Caml"
- requires = "meta_conv msgpack"
+ requires = "ppx_meta_conv msgpack"
  archive(byte) = "msgpack_conv.cma"
  archive(byte, plugin) = "msgpack_conv.cma"
  archive(native) = "msgpack_conv.cmxa"

@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 5324e8591c02072fc0cba40be3a189bf)
+# DO NOT EDIT (digest: bc3b77c2338fa3afef42339a52894c13)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -27,8 +27,8 @@ true: annot, bin_annot
 <lib/conv/*.ml{,i,y}>: oasis_library_msgpack_conv_byte
 <lib/conv/msgpack_conv.{cma,cmxa}>: oasis_library_msgpack_conv_native
 <lib/conv/*.ml{,i,y}>: oasis_library_msgpack_conv_native
-<lib/conv/*.ml{,i,y}>: pkg_meta_conv
 <lib/conv/*.ml{,i,y}>: pkg_num
+<lib/conv/*.ml{,i,y}>: pkg_ppx_meta_conv
 <lib/conv/*.ml{,i,y}>: use_msgpack
 # Executable test_core
 <test/core/main.{native,byte}>: pkg_num
@@ -38,16 +38,14 @@ true: annot, bin_annot
 <test/core/*.ml{,i,y}>: pkg_oUnit
 <test/core/*.ml{,i,y}>: use_msgpack
 # Executable test_conv
-<test/conv/main.{native,byte}>: pkg_meta_conv
-<test/conv/main.{native,byte}>: pkg_meta_conv.syntax
 <test/conv/main.{native,byte}>: pkg_num
 <test/conv/main.{native,byte}>: pkg_oUnit
+<test/conv/main.{native,byte}>: pkg_ppx_meta_conv
 <test/conv/main.{native,byte}>: use_msgpack
 <test/conv/main.{native,byte}>: use_msgpack_conv
-<test/conv/*.ml{,i,y}>: pkg_meta_conv
-<test/conv/*.ml{,i,y}>: pkg_meta_conv.syntax
 <test/conv/*.ml{,i,y}>: pkg_num
 <test/conv/*.ml{,i,y}>: pkg_oUnit
+<test/conv/*.ml{,i,y}>: pkg_ppx_meta_conv
 <test/conv/*.ml{,i,y}>: use_msgpack
 <test/conv/*.ml{,i,y}>: use_msgpack_conv
 # OASIS_STOP
