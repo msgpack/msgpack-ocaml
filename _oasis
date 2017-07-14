@@ -43,7 +43,7 @@ Library msgpack
   # supress warning for Coq-extracted code
   ByteOpt: -g -w +a-27-39-4 -annot
   NativeOpt: -g -w +a-27-39-4 -annot
-  BuildDepends: num
+  BuildDepends: num, bytes
 
 Library msgpack_conv
   Build$: flag(conv) || flag(all)
