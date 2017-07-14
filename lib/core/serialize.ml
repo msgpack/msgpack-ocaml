@@ -2,16 +2,6 @@ open Base
 
 type t = Pack.t
 
-let explode str =
-  let res = ref [] in
-  String.iter (fun c -> res := c :: !res) str;
-  List.rev !res
-
-let implode chars =
-  let res = String.create (List.length chars) in
-  List.iteri (fun i c -> res.[i] <- c) chars;
-  res
-
 let deserialize_string str =
   str
   +> explode

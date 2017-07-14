@@ -149,6 +149,6 @@ let explode str =
   List.rev !res
 
 let implode chars =
-  let res = String.create (List.length chars) in
-  List.iteri (fun i c -> res.[i] <- c) chars;
-  res
+  let res = Bytes.create (List.length chars) in
+  List.iteri (fun i c -> Bytes.set res i c) chars;
+  Bytes.to_string res
