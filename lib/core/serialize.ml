@@ -2,16 +2,6 @@ open MsgpackBase
 
 type t = Pack.t
 
-let explode str =
-  let res = ref [] in
-  String.iter (fun c -> res := c :: !res) str;
-  List.rev !res
-
-let implode chars =
-  let res = Bytes.create (List.length chars) in
-  List.iteri (fun i c -> Bytes.set res i c) chars;
-  res
-
 let deserialize_string str =
   str
   +> explode

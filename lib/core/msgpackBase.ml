@@ -151,4 +151,4 @@ let explode str =
 let implode chars =
   let res = Bytes.create (List.length chars) in
   List.iteri (fun i c -> Bytes.set res i c) chars;
-  res
+  Bytes.to_string res
