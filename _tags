@@ -55,4 +55,3 @@ true: annot, bin_annot
 <test/conv/*.ml{,i,y}>: use_msgpack
 <test/conv/*.ml{,i,y}>: use_msgpack_conv
 # OASIS_STOP
-<test/conv/*.ml{,i}>: syntax_camlp4o
