@@ -45,6 +45,15 @@ let obj =
 
 See also, `examlpe/`
 
+DEVELOPMENT
+------------
+Setup development enviroment with docker:
+
+```sh
+$ docker-compose build
+$ docker-compose run app
+```
+
 TEST
 ------------
 
