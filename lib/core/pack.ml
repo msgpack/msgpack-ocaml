@@ -1,4 +1,4 @@
-open Base
+open MsgpackBase
 open MsgpackCore
 
 exception Not_conversion of string

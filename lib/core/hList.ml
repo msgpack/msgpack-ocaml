@@ -1,4 +1,4 @@
-open Base
+open MsgpackBase
 
 let rec last =
   function

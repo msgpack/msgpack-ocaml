@@ -1,4 +1,4 @@
-open Base
+open MsgpackBase
 
 type t = Pack.t
 
