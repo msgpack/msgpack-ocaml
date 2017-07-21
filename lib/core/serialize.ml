@@ -15,7 +15,8 @@ let implode chars =
 let deserialize_string str =
   str
   +> explode
-  +> List.map Pack.ascii8_of_char
+  +> List.rev_map Pack.ascii8_of_char
+  +> List.rev
   +> MsgpackCore.deserialize 0
   +> List.hd
   +> Pack.unpack
