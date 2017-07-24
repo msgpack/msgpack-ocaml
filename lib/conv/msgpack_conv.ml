@@ -1,4 +1,5 @@
 open MsgpackBase
+open Meta_conv.Types
 
 include Meta_conv.Coder.Make(struct
 
@@ -157,5 +158,5 @@ let option_of_msgpack f =
     | v    -> Some (Some v))
     f
 
-let lazy_t_of_msgpack    f : 'a lazy_t decoder =
-  Helper.lazy_t_of (fun e -> raise (Error e)) f
+let lazy_t_of_msgpack (d : ('a, Msgpack.Serialize.t) Decoder.t) : ('a lazy_t, Msgpack.Serialize.t) Decoder.t =
+  Helper.lazy_t_of (fun (e : Msgpack.Serialize.t Meta_conv.Error.t) -> raise (Exception e)) d
