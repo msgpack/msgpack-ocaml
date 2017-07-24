@@ -9,22 +9,22 @@ type t1 = {
   f   : float;
   u   : unit;
   c   : char;
-} with conv(msgpack)
+} [@@deriving conv{msgpack}]
 
 type t2 =
-  int list with conv(msgpack)
+  int list [@@deriving conv{msgpack}]
 
 type t3 =
-  int array with conv(msgpack)
+  int array [@@deriving conv{msgpack}]
 
 type t4 =
-  string option with conv(msgpack)
+  string option [@@deriving conv{msgpack}]
 
 type t5 =
-  int * string with conv(msgpack)
+  int * string [@@deriving conv{msgpack}]
 
 type t6 =
-  Foo of int | Bar with conv(msgpack)
+  Foo of int | Bar [@@deriving conv{msgpack}]
 
 let check pack unpack x y =
   assert_equal x (pack y);
