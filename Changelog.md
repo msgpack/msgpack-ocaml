@@ -13,3 +13,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Breaking changes
 
  * Drop camlp4 and use ppx_meta_conv instead of meta_conv. ([#12](https://github.com/msgpack/msgpack-ocaml/pull/12), [#15](https://github.com/msgpack/msgpack-ocaml/pull/15))
+ * Drop OCaml before 4.01.0. ([#24](https://github.com/msgpack/msgpack-ocaml/pull/24))
