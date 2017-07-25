@@ -1,5 +1,5 @@
 (* serialize *)
-let bytes = 
+let bytes =
   Msgpack.Serialize.serialize_string ((`FixArray [`PFixnum 1; `PFixnum 2; `PFixnum 3]) : Msgpack.Serialize.t)
 
 (* deserialize *)
@@ -11,10 +11,10 @@ open Msgpack_conv
 type t = {
   int : int;
   str : string;
-} with conv(msgpack)
+} [@@deriving conv{msgpack}]
 
 (* serialize *)
-let bytes = 
+let bytes =
   Msgpack.Serialize.serialize_string (msgpack_of_t { int = 42; str = "ans" })
 
 (* deserialize *)
