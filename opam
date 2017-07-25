@@ -21,7 +21,7 @@ install: [
 remove: [
   ["ocamlfind" "remove" "msgpack"]
 ]
-
+available: [ ocaml-version >= "4.01.0" ]
 depends: [
   "ocamlfind" {build}
   "ocamlbuild" {build}
