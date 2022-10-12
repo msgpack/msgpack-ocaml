@@ -1,0 +1,12 @@
+(library
+ (public_name msgpack)
+ (modules
+  msgpack
+  hList
+  msgpackCore
+  pack
+  serialize
+  msgpackConfig
+  msgpackBase)
+ (flags -g -w +a-27-39-4 -annot)
+ (libraries num))

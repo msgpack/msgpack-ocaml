@@ -1,0 +1,6 @@
+(test
+ (name main)
+ (package msgpack)
+ (libraries
+  msgpack
+  oUnit))

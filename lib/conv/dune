@@ -1,0 +1,11 @@
+(library
+ (public_name msgpack-conv)
+ (name msgpack_conv)
+ (modules
+  msgpack_conv
+  encode
+  decode)
+ (flags -g -w +a -annot)
+ (libraries
+  msgpack
+  ppx_meta_conv.runtime))
