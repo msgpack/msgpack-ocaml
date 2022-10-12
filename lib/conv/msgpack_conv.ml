@@ -1,4 +1,4 @@
-open MsgpackBase
+open Msgpack__MsgpackBase
 open Meta_conv.Types
 
 include Meta_conv.Coder.Make(struct

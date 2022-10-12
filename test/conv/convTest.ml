@@ -1,4 +1,3 @@
-open Msgpack
 open Msgpack_conv
 open OUnit
 

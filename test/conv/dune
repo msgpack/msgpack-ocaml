@@ -1,0 +1,8 @@
+(test
+ (name main)
+ (package msgpack-conv)
+ (preprocess (pps ppx_meta_conv.ppx))
+ (libraries
+  msgpack
+  msgpack-conv
+  oUnit))

@@ -1,4 +1,4 @@
-open MsgpackBase
+open Msgpack__MsgpackBase
 
 type t = Msgpack.Serialize.t
 

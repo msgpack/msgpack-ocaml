@@ -2,7 +2,7 @@
 
 git clean -fdx
 cd $PWD/$(git rev-parse --show-cdup)
-opam pin add msgpack . -y
+opam pin add . -y
 
 cd examples
 ./build.sh
